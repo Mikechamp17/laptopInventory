@@ -1,0 +1,159 @@
+<div class="settings-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>settings</mat-icon>
+        Settings
+      </mat-card-title>
+      <mat-card-subtitle>Configure Google Sheets integration</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Google Sheets Configuration -->
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>table_chart</mat-icon>
+            Google Sheets Integration
+          </mat-panel-title>
+          <mat-panel-description>
+            Connect your inventory to Google Sheets
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="config-section">
+          <h3>Configuration</h3>
+          
+          <mat-form-field class="full-width">
+            <mat-label>Spreadsheet ID</mat-label>
+            <input matInput 
+                   [(ngModel)]="googleSheetsConfig.spreadsheetId"
+                   placeholder="Enter your Google Sheets ID"
+                   required>
+            <mat-hint>Found in the URL of your Google Sheet</mat-hint>
+            <button mat-icon-button matSuffix (click)="copySpreadsheetId()" matTooltip="Copy Spreadsheet ID">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button mat-icon-button matSuffix (click)="openGoogleSheets()" matTooltip="Open Google Sheets">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>API Key</mat-label>
+            <input matInput 
+                   [(ngModel)]="googleSheetsConfig.apiKey"
+                   [type]="showApiKey ? 'text' : 'password'"
+                   placeholder="Enter your Google Sheets API Key"
+                   required>
+            <mat-hint>Get this from Google Cloud Console</mat-hint>
+            <button mat-icon-button matSuffix (click)="toggleApiKeyVisibility()" matTooltip="Toggle visibility">
+              <mat-icon>{{ showApiKey ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <button mat-icon-button matSuffix (click)="openGoogleCloudConsole()" matTooltip="Open Google Cloud Console">
+              <mat-icon>cloud</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Range</mat-label>
+            <input matInput 
+                   [(ngModel)]="googleSheetsConfig.range"
+                   placeholder="e.g., Sheet1!A:G">
+            <mat-hint>Sheet name and column range (default: Sheet1!A:G)</mat-hint>
+          </mat-form-field>
+
+          <div class="button-group">
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="saveConfig()"
+                    matTooltip="Save configuration">
+              <mat-icon>save</mat-icon>
+              Save Configuration
+            </button>
+            
+            <button mat-stroked-button 
+                    (click)="testConnection()"
+                    matTooltip="Test connection to Google Sheets">
+              <mat-icon>wifi</mat-icon>
+              Test Connection
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Setup Instructions -->
+        <div class="setup-section">
+          <h3>Setup Instructions</h3>
+          <div class="instructions">
+            <pre>{{ setupInstructions }}</pre>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- CSV Export Settings -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>file_download</mat-icon>
+            Export Settings
+          </mat-panel-title>
+          <mat-panel-description>
+            Configure CSV export options
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="config-section">
+          <h3>CSV Export Options</h3>
+          <p>Configure how your data is exported to CSV format.</p>
+          
+          <mat-form-field class="full-width">
+            <mat-label>Date Format</mat-label>
+            <input matInput value="YYYY-MM-DD" readonly>
+            <mat-hint>Date format used in CSV exports</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Delimiter</mat-label>
+            <input matInput value="Comma (,)" readonly>
+            <mat-hint>Field separator in CSV files</mat-hint>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Backup & Restore -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>backup</mat-icon>
+            Backup & Restore
+          </mat-panel-title>
+          <mat-panel-description>
+            Manage your data backups
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="config-section">
+          <h3>Data Management</h3>
+          <p>Backup and restore your inventory data.</p>
+          
+          <div class="button-group">
+            <button mat-raised-button 
+                    color="accent"
+                    matTooltip="Export all data as JSON backup">
+              <mat-icon>cloud_download</mat-icon>
+              Export Backup
+            </button>
+            
+            <button mat-stroked-button 
+                    matTooltip="Import data from backup file">
+              <mat-icon>cloud_upload</mat-icon>
+              Import Backup
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-card-content>
+  </mat-card>
+</div>

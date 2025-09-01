@@ -1,0 +1,124 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="mr-16">{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode ? 'Edit' : 'Add' }} Laptop
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ isEditMode ? 'Update laptop information' : 'Add a new laptop to inventory' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form [formGroup]="laptopForm" (ngSubmit)="onSubmit()" class="laptop-form">
+        <div class="form-row">
+          <mat-form-field class="form-field">
+            <mat-label>Asset Tag *</mat-label>
+            <input matInput 
+                   formControlName="asset_tag" 
+                   placeholder="e.g., whg000777"
+                   [readonly]="isEditMode">
+            <mat-error *ngIf="laptopForm.get('asset_tag')?.hasError('required')">
+              Asset tag is required
+            </mat-error>
+            <mat-error *ngIf="laptopForm.get('asset_tag')?.hasError('pattern')">
+              Asset tag must be alphanumeric
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field class="form-field">
+            <mat-label>Make *</mat-label>
+            <input matInput 
+                   formControlName="make" 
+                   placeholder="e.g., HP, Dell, Lenovo">
+            <mat-error *ngIf="laptopForm.get('make')?.hasError('required')">
+              Make is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field class="form-field">
+            <mat-label>Assigned To *</mat-label>
+            <input matInput 
+                   formControlName="assigned_to" 
+                   placeholder="e.g., John Wick">
+            <mat-error *ngIf="laptopForm.get('assigned_to')?.hasError('required')">
+              Assigned person is required
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field class="form-field">
+            <mat-label>Assigned Date *</mat-label>
+            <input matInput 
+                   [matDatepicker]="assignedDatePicker" 
+                   formControlName="assigned_date"
+                   placeholder="Choose a date"
+                   readonly
+                   [max]="maxDate">
+            <mat-datepicker-toggle matSuffix [for]="assignedDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #assignedDatePicker 
+                           [startAt]="startDate"
+                           [touchUi]="false">
+            </mat-datepicker>
+            <mat-hint>Click the calendar icon to select a date</mat-hint>
+            <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('required')">
+              Assigned date is required
+            </mat-error>
+            <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('matDatepickerMax')">
+              Date cannot be in the future
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field class="form-field">
+            <mat-label>Issues</mat-label>
+            <textarea matInput 
+                      formControlName="issues" 
+                      placeholder="Describe any issues with the laptop"
+                      rows="3"></textarea>
+            <mat-hint>Leave blank if no issues</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field class="form-field">
+            <mat-label>Notes</mat-label>
+            <textarea matInput 
+                      formControlName="notes" 
+                      placeholder="Additional notes or comments"
+                      rows="3"></textarea>
+            <mat-hint>Optional notes for tracking</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="returned" class="form-field">
+            Laptop has been returned
+          </mat-checkbox>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button 
+                  type="button" 
+                  routerLink="/inventory"
+                  class="mr-16">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          
+          <button mat-raised-button 
+                  type="submit" 
+                  color="primary"
+                  [disabled]="laptopForm.invalid || loading">
+            <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            {{ isEditMode ? 'Update' : 'Add' }} Laptop
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

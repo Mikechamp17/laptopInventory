@@ -1,0 +1,284 @@
+<div class="inventory-container">
+  <!-- Single Clean Header -->
+  <div class="clean-header">
+    <div class="header-main">
+      <div class="header-title-section">
+        <div class="company-logo">
+          <img src="assets/images/whitehat-gaming-logo.png" 
+               alt="WHITEHAT GAMING" 
+               class="logo-image">
+        </div>
+        <div class="title-divider"></div>
+        <div class="title-icon">
+          <mat-icon>laptop_mac</mat-icon>
+        </div>
+        <div class="title-content">
+          <h1>Laptop Inventory</h1>
+          <p>Track and manage all laptops efficiently</p>
+        </div>
+      </div>
+      
+              <div class="header-actions">
+          <div class="search-section">
+            <mat-form-field class="search-field" appearance="outline">
+              <mat-label>Search laptops</mat-label>
+              <input matInput 
+                     [(ngModel)]="searchTerm" 
+                     (input)="onSearchInput()"
+                     placeholder="Search by asset tag, assigned to, or make...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Bar -->
+  <div class="quick-actions">
+    <button mat-raised-button 
+            color="primary" 
+            routerLink="/add" 
+            class="add-laptop-btn">
+      <mat-icon>add</mat-icon>
+      Add New Laptop
+    </button>
+    
+    <button mat-stroked-button 
+            routerLink="/settings" 
+            class="settings-btn">
+      <mat-icon>settings</mat-icon>
+      Settings
+    </button>
+  </div>
+  
+  <mat-card>
+    
+    <mat-card-content>
+      <!-- Search and Filter Section -->
+      <div class="search-filter-section">
+        <div class="filter-chips">
+          <button mat-stroked-button 
+                  [class.active]="selectedStatus === 'all'"
+                  (click)="selectStatus('all')"
+                  class="filter-button">
+            All
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedStatus === 'in_stock'"
+                  (click)="selectStatus('in_stock')"
+                  class="filter-button">
+            In Stock
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedStatus === 'assigned'"
+                  (click)="selectStatus('assigned')"
+                  class="filter-button">
+            Assigned
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedStatus === 'damaged'"
+                  (click)="selectStatus('damaged')"
+                  class="filter-button">
+            Damaged
+          </button>
+          
+          <button mat-raised-button 
+                  (click)="exportToCSV()" 
+                  [disabled]="filteredLaptops.length === 0"
+                  matTooltip="Export to CSV"
+                  class="export-button">
+            <mat-icon>download</mat-icon>
+            Export CSV
+          </button>
+          
+          <button mat-raised-button 
+                  (click)="exportToExcel()" 
+                  [disabled]="filteredLaptops.length === 0"
+                  matTooltip="Export to Excel-compatible CSV"
+                  class="excel-button">
+            <mat-icon>table_chart</mat-icon>
+            Export Excel
+          </button>
+          
+          <button mat-raised-button 
+                  (click)="exportToGoogleSheets()" 
+                  [disabled]="filteredLaptops.length === 0"
+                  matTooltip="Export to Google Sheets"
+                  class="google-sheets-button">
+            <mat-icon>table_chart</mat-icon>
+            Export to Sheets
+          </button>
+        </div>
+      </div>
+
+      <!-- Status Summary -->
+      <div class="status-summary">
+        <div class="status-card in-stock">
+          <div class="status-icon">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <div class="status-content">
+            <div class="status-count">{{ statusSummary.in_stock.length }}</div>
+            <div class="status-label">In Stock</div>
+          </div>
+        </div>
+        
+        <div class="status-card assigned">
+          <div class="status-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="status-content">
+            <div class="status-count">{{ statusSummary.assigned.length }}</div>
+            <div class="status-label">Assigned</div>
+          </div>
+        </div>
+        
+        <div class="status-card damaged">
+          <div class="status-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="status-content">
+            <div class="status-count">{{ statusSummary.damaged.length }}</div>
+            <div class="status-label">Damaged</div>
+          </div>
+        </div>
+        
+        <div class="status-card total">
+          <div class="status-icon">
+            <mat-icon>laptop</mat-icon>
+          </div>
+          <div class="status-content">
+            <div class="status-count">{{ laptops.length }}</div>
+            <div class="status-label">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Status -->
+      <div *ngIf="(selectedStatus && selectedStatus !== 'all') || (searchTerm && searchTerm.trim())" class="filter-status">
+        <mat-chip color="primary" selected>
+          <mat-icon>filter_list</mat-icon>
+          Showing {{ filteredLaptops.length }} of {{ laptops.length }} laptops
+          <span *ngIf="selectedStatus && selectedStatus !== 'all'">• Status: {{ getStatusDisplayText(selectedStatus) }}</span>
+          <span *ngIf="searchTerm && searchTerm.trim()">• Search: "{{ searchTerm }}"</span>
+        </mat-chip>
+        <button mat-button color="primary" (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Loading inventory...</p>
+      </div>
+
+      <!-- Skeleton Loading for Table -->
+      <div *ngIf="loading" class="skeleton-container">
+        <div class="skeleton-row" *ngFor="let item of [1,2,3,4,5]">
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+          <div class="skeleton-cell"></div>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div *ngIf="!loading && filteredLaptops.length > 0" class="table-container">
+        <table mat-table [dataSource]="filteredLaptops" class="mat-elevation-z1">
+          <!-- Asset Tag Column -->
+          <ng-container matColumnDef="asset_tag">
+            <th mat-header-cell *matHeaderCellDef>Asset Tag</th>
+            <td mat-cell *matCellDef="let laptop">{{ laptop.asset_tag }}</td>
+          </ng-container>
+
+          <!-- Make Column -->
+          <ng-container matColumnDef="make">
+            <th mat-header-cell *matHeaderCellDef>Make</th>
+            <td mat-cell *matCellDef="let laptop">{{ laptop.make }}</td>
+          </ng-container>
+
+          <!-- Assigned To Column -->
+          <ng-container matColumnDef="assigned_to">
+            <th mat-header-cell *matHeaderCellDef>Assigned To</th>
+            <td mat-cell *matCellDef="let laptop">{{ laptop.assigned_to }}</td>
+          </ng-container>
+
+          <!-- Assigned Date Column -->
+          <ng-container matColumnDef="assigned_date">
+            <th mat-header-cell *matHeaderCellDef>Assigned Date</th>
+            <td mat-cell *matCellDef="let laptop">{{ laptop.assigned_date | date:'shortDate' }}</td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let laptop">
+              <span class="status-badge" [ngClass]="getStatusClass(laptop)">
+                {{ getStatusText(laptop) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Issues Column -->
+          <ng-container matColumnDef="issues">
+            <th mat-header-cell *matHeaderCellDef>Issues</th>
+            <td mat-cell *matCellDef="let laptop">
+              <span *ngIf="laptop.issues; else noIssues" class="issues-text">
+                {{ laptop.issues }}
+              </span>
+              <ng-template #noIssues>
+                <span class="no-issues">No issues</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let laptop">
+              <button mat-icon-button 
+                      [routerLink]="['/edit', laptop.id]" 
+                      matTooltip="Edit laptop"
+                      color="primary">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      (click)="deleteLaptop(laptop)" 
+                      matTooltip="Delete laptop"
+                      color="warn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && filteredLaptops.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">laptop</mat-icon>
+        <h3>No laptops found</h3>
+        <p *ngIf="searchTerm || selectedStatus !== 'all'">
+          Try adjusting your search or filter criteria
+        </p>
+        <p *ngIf="!searchTerm && selectedStatus === 'all'">
+          No laptops have been added to the inventory yet
+        </p>
+        <button mat-raised-button 
+                color="primary" 
+                routerLink="/add"
+                class="mt-16">
+          <mat-icon>add</mat-icon>
+          Add First Laptop
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

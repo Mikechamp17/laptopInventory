@@ -1,0 +1,29 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "laptops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "asset_tag",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "laptops",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "assigned_date",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

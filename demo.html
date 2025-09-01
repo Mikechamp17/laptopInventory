@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Inventory Tracker - Component Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .file-structure {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .component-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .code-example {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖥️ Laptop Inventory Tracker - Component Structure</h1>
+    
+    <div class="demo-section">
+        <h2>📁 Project Structure</h2>
+        <div class="file-structure">laptopInventory.v2/
+├── src/
+│   ├── app/
+│   │   ├── models/
+│   │   │   └── laptop.model.ts          # Data interfaces
+│   │   ├── services/
+│   │   │   └── laptop.service.ts        # Firebase CRUD operations
+│   │   ├── inventory-list/
+│   │   │   ├── inventory-list.component.html    # ✅ HTML Template
+│   │   │   ├── inventory-list.component.scss    # ✅ SCSS Styles
+│   │   │   └── inventory-list.component.ts      # ✅ TypeScript Logic
+│   │   ├── laptop-form/
+│   │   │   ├── laptop-form.component.html       # ✅ HTML Template
+│   │   │   ├── laptop-form.component.scss       # ✅ SCSS Styles
+│   │   │   └── laptop-form.component.ts         # ✅ TypeScript Logic
+│   │   ├── confirm-dialog/
+│   │   │   ├── confirm-dialog.component.html    # ✅ HTML Template
+│   │   │   ├── confirm-dialog.component.scss    # ✅ SCSS Styles
+│   │   │   └── confirm-dialog.component.ts      # ✅ TypeScript Logic
+│   │   ├── app.component.html                   # ✅ HTML Template
+│   │   ├── app.component.scss                   # ✅ SCSS Styles
+│   │   ├── app.component.ts                     # ✅ TypeScript Logic
+│   │   ├── app.config.ts                        # App configuration
+│   │   └── app.routes.ts                        # Routing
+│   ├── environments/                             # Firebase config
+│   ├── styles.scss                              # ✅ Global SCSS
+│   └── main.ts                                  # Entry point
+├── firebase.json                                # Firebase hosting
+├── firestore.rules                              # Security rules
+├── firestore.indexes.json                       # Database indexes
+├── package.json                                 # Dependencies
+├── angular.json                                 # Angular config (SCSS enabled)
+├── README.md                                    # Documentation
+├── quick-start.sh                               # Mac/Linux setup
+└── quick-start.bat                              # Windows setup</div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎨 SCSS Features Enabled</h2>
+        <div class="component-info">
+            <strong>✅ SCSS Configuration:</strong>
+            <ul>
+                <li>Angular configured to use SCSS instead of CSS</li>
+                <li>Global styles in <code>src/styles.scss</code></li>
+                <li>Component-specific styles in separate <code>.scss</code> files</li>
+                <li>Nested selectors, variables, and mixins support</li>
+            </ul>
+        </div>
+        
+        <div class="code-example">// Example SCSS features used:
+.status-card {
+  padding: 16px;
+  border-radius: 8px;
+  
+  &.in-stock {
+    background-color: #4caf50;
+  }
+  
+  &.assigned {
+    background-color: #2196f3;
+  }
+}</div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🔧 Component Files</h2>
+        
+        <div class="component-info">
+            <h3>📋 App Component</h3>
+            <p><strong>Files:</strong> <code>app.component.html</code> + <code>app.component.scss</code></p>
+            <p><strong>Purpose:</strong> Main navigation and layout wrapper</p>
+            <p><strong>Features:</strong> Toolbar with navigation, responsive design</p>
+        </div>
+
+        <div class="component-info">
+            <h3>📊 Inventory List Component</h3>
+            <p><strong>Files:</strong> <code>inventory-list.component.html</code> + <code>inventory-list.component.scss</code></p>
+            <p><strong>Purpose:</strong> Display all laptops with filtering and search</p>
+            <p><strong>Features:</strong> Data table, status cards, search, filters, actions</p>
+        </div>
+
+        <div class="component-info">
+            <h3>✏️ Laptop Form Component</h3>
+            <p><strong>Files:</strong> <code>laptop-form.component.html</code> + <code>laptop-form.component.scss</code></p>
+            <p><strong>Purpose:</strong> Add and edit laptop entries</p>
+            <p><strong>Features:</strong> Form validation, responsive layout, loading states</p>
+        </div>
+
+        <div class="component-info">
+            <h3>⚠️ Confirm Dialog Component</h3>
+            <p><strong>Files:</strong> <code>confirm-dialog.component.html</code> + <code>confirm-dialog.component.scss</code></p>
+            <p><strong>Purpose:</strong> Confirmation dialogs for destructive actions</p>
+            <p><strong>Features:</strong> Reusable dialog, customizable content</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🚀 Benefits of This Structure</h2>
+        <ul>
+            <li><strong>✅ Easy Editing:</strong> HTML templates are separate and easy to modify</li>
+            <li><strong>✅ SCSS Support:</strong> Use nested selectors, variables, and mixins</li>
+            <li><strong>✅ Better Organization:</strong> Each component has its own files</li>
+            <li><strong>✅ IDE Support:</strong> Better syntax highlighting and autocomplete</li>
+            <li><strong>✅ Team Collaboration:</strong> Multiple developers can work on different files</li>
+            <li><strong>✅ Maintenance:</strong> Easier to find and fix styling issues</li>
+        </ul>
+    </div>
+
+    <div class="demo-section">
+        <h2>📝 How to Edit</h2>
+        <div class="code-example">1. HTML Templates: Edit .html files directly
+2. SCSS Styles: Edit .scss files with full SCSS features
+3. TypeScript Logic: Edit .ts files for component behavior
+4. Global Styles: Modify src/styles.scss for app-wide styling</div>
+        
+        <p><strong>Example:</strong> To change the inventory table layout, edit <code>src/app/inventory-list/inventory-list.component.html</code></p>
+        <p><strong>Example:</strong> To modify button colors, edit <code>src/app/inventory-list/inventory-list.component.scss</code></p>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎯 Next Steps</h2>
+        <ol>
+            <li>Run <code>./quick-start.sh</code> (Mac/Linux) or <code>quick-start.bat</code> (Windows)</li>
+            <li>Configure Firebase in <code>src/environments/environment.ts</code></li>
+            <li>Start the app with <code>npm start</code></li>
+            <li>Edit HTML and SCSS files as needed!</li>
+        </ol>
+    </div>
+
+    <footer style="text-align: center; margin-top: 40px; color: #666;">
+        <p>🎉 Your laptop inventory tracker is ready with separate HTML and SCSS files!</p>
+    </footer>
+</body>
+</html>

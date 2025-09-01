@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>
+  <mat-icon class="mr-16" [color]="data.confirmColor || 'warn'">warning</mat-icon>
+  {{ data.title }}
+</h2>
+
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button 
+          [mat-dialog-close]="false"
+          class="mr-16">
+    {{ data.cancelText || 'Cancel' }}
+  </button>
+  
+  <button mat-raised-button 
+          [color]="data.confirmColor || 'warn'"
+          [mat-dialog-close]="true">
+    {{ data.confirmText || 'Confirm' }}
+  </button>
+</mat-dialog-actions>
