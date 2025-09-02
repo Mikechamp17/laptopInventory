@@ -68,20 +68,30 @@ export class LaptopService {
     return this.getLaptops().pipe(
       map(laptops => {
         const status: LaptopStatus = {
-          in_stock: [],
+          available: [],
           assigned: [],
           damaged: []
         };
 
         laptops.forEach(laptop => {
-          if (laptop.returned) {
-            if (laptop.issues && laptop.issues.trim() !== '') {
+          // If laptop has no assignment, it's available
+          if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
+            if (laptop.returned && laptop.issues && laptop.issues.trim() !== '') {
               status.damaged.push(laptop);
             } else {
-              status.in_stock.push(laptop);
+              status.available.push(laptop);
             }
           } else {
-            status.assigned.push(laptop);
+            // If laptop is assigned but returned
+            if (laptop.returned) {
+              if (laptop.issues && laptop.issues.trim() !== '') {
+                status.damaged.push(laptop);
+              } else {
+                status.assigned.push(laptop); // Keep as assigned even if returned
+              }
+            } else {
+              status.assigned.push(laptop);
+            }
           }
         });
 
@@ -95,7 +105,7 @@ export class LaptopService {
     return this.getLaptops().pipe(
       map(laptops => laptops.filter(laptop => 
         laptop.asset_tag.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        laptop.assigned_to.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (laptop.assigned_to && laptop.assigned_to.toLowerCase().includes(searchTerm.toLowerCase())) ||
         laptop.make.toLowerCase().includes(searchTerm.toLowerCase())
       ))
     );

@@ -42,7 +42,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 export class InventoryListComponent implements OnInit, OnDestroy {
   laptops: Laptop[] = [];
   filteredLaptops: Laptop[] = [];
-  statusSummary: LaptopStatus = { in_stock: [], assigned: [], damaged: [] };
+  statusSummary: LaptopStatus = { available: [], assigned: [], damaged: [] };
   loading = true;
   searchTerm = '';
   selectedStatus = 'all';
@@ -70,6 +70,8 @@ export class InventoryListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadInventory();
+
+    
   }
 
   ngOnDestroy(): void {
@@ -85,7 +87,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
         next: (status) => {
           this.statusSummary = status;
           this.laptops = [
-            ...status.in_stock,
+            ...status.available,
             ...status.assigned,
             ...status.damaged
           ];
@@ -172,7 +174,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(laptop =>
         laptop.asset_tag.toLowerCase().includes(searchLower) ||
-        laptop.assigned_to.toLowerCase().includes(searchLower) ||
+        (laptop.assigned_to && laptop.assigned_to.toLowerCase().includes(searchLower)) ||
         laptop.make.toLowerCase().includes(searchLower)
       );
       console.log('After search filter:', filtered.length, 'laptops');
@@ -183,24 +185,54 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   }
 
   getStatusText(laptop: Laptop): string {
-    if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'Damaged' : 'In Stock';
+    // If laptop has no assignment, it's available
+    if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
+      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
+        return 'Damaged';
+      }
+      return 'Available';
     }
+    
+    // If laptop is assigned but returned
+    if (laptop.returned) {
+      return laptop.issues && laptop.issues.trim() ? 'Damaged' : 'Returned';
+    }
+    
     return 'Assigned';
   }
 
   getStatusClass(laptop: Laptop): string {
-    if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'in-stock';
+    // If laptop has no assignment, it's available
+    if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
+      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
+        return 'damaged';
+      }
+      return 'available';
     }
+    
+    // If laptop is assigned but returned
+    if (laptop.returned) {
+      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'returned';
+    }
+    
     return 'assigned';
   }
 
   // Get status key for filtering (consistent with chip values)
   getStatusKey(laptop: Laptop): string {
-    if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'in_stock';
+    // If laptop has no assignment, it's available
+    if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
+      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
+        return 'damaged';
+      }
+      return 'available';
     }
+    
+    // If laptop is assigned but returned
+    if (laptop.returned) {
+      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'returned';
+    }
+    
     return 'assigned';
   }
 
@@ -230,7 +262,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     console.log('Current filteredLaptops:', this.filteredLaptops.length);
     
     // Test each status
-    ['all', 'in_stock', 'assigned', 'damaged'].forEach(status => {
+    ['all', 'available', 'assigned', 'damaged'].forEach(status => {
       console.log(`\n--- Testing status: ${status} ---`);
       this.selectedStatus = status;
       this.applyFilters();
@@ -243,13 +275,19 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   }
 
   deleteLaptop(laptop: Laptop): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete Laptop',
-        message: `Are you sure you want to delete laptop ${laptop.asset_tag}? This action cannot be undone.`
-      }
-    });
+          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '450px',
+        maxWidth: '90vw',
+        panelClass: 'delete-dialog-panel',
+        disableClose: true,
+        data: {
+          title: 'Delete Laptop',
+          message: `Are you sure you want to delete laptop <strong>${laptop.asset_tag}</strong>? This action cannot be undone.`,
+          confirmText: 'Delete Laptop',
+          cancelText: 'Cancel',
+          confirmColor: 'warn'
+        }
+      });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && laptop.id) {
@@ -301,42 +339,6 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     document.body.removeChild(link);
 
     this.snackBar.open('CSV exported successfully', 'Close', { duration: 3000 });
-  }
-
-  exportToExcel(): void {
-    if (this.filteredLaptops.length === 0) {
-      this.snackBar.open('No data to export', 'Close', { duration: 3000 });
-      return;
-    }
-
-    // Create Excel-compatible CSV with proper formatting
-    const headers = ['Asset Tag', 'Make', 'Assigned To', 'Assigned Date', 'Status', 'Issues', 'Notes', 'Created Date'];
-    const csvData = this.filteredLaptops.map(laptop => [
-      laptop.asset_tag,
-      laptop.make,
-      laptop.assigned_to,
-      laptop.assigned_date,
-      this.getStatusText(laptop),
-      laptop.issues || '',
-      laptop.notes || '',
-      laptop.created_at ? new Date(laptop.created_at).toLocaleDateString() : ''
-    ]);
-
-    const csvContent = [headers, ...csvData]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `laptop-inventory-excel-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.snackBar.open('Excel-compatible CSV exported successfully', 'Close', { duration: 3000 });
   }
 
   exportToGoogleSheets(): void {

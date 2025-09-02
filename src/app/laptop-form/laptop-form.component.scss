@@ -48,6 +48,34 @@ input[matInput][readonly] {
   }
 }
 
+// Status indicator styles
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #e8f5e8;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  margin: 8px 0;
+  
+  .status-icon.available {
+    color: #4caf50;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .status-text {
+    color: #2e7d32;
+    font-size: 14px;
+    
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .form-actions {
     flex-direction: column;

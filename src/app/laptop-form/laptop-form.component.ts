@@ -78,8 +78,8 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     return this.fb.group({
       asset_tag: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]],
       make: ['', Validators.required],
-      assigned_to: ['', Validators.required],
-      assigned_date: ['', Validators.required],
+      assigned_to: [''],
+      assigned_date: [''],
       returned: [false],
       issues: [''],
       notes: ['']
@@ -120,15 +120,17 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    if (this.laptopForm.invalid) return;
+    if (!this.isFormValid()) return;
 
     this.loading = true;
     const formValue = this.laptopForm.value;
     
-    // Format the date properly for Firebase
+    // Format the date properly for Firebase (only if assigned)
     const laptopData: Omit<Laptop, 'id'> = {
       ...formValue,
-      assigned_date: this.formatDateForFirebase(formValue.assigned_date)
+      assigned_date: this.isLaptopAssigned() ? 
+        this.formatDateForFirebase(formValue.assigned_date) : '',
+      assigned_to: this.isLaptopAssigned() ? formValue.assigned_to : ''
     };
 
     if (this.isEditMode && this.laptopId) {
@@ -170,5 +172,44 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     if (isNaN(dateObj.getTime())) return '';
     
     return dateObj.toISOString().split('T')[0];
+  }
+
+  // Check if laptop is being assigned to someone
+  isLaptopAssigned(): boolean {
+    const assignedTo = this.laptopForm.get('assigned_to')?.value;
+    return assignedTo && assignedTo.trim() !== '';
+  }
+
+  // Handle assignment field changes
+  onAssignmentChange(): void {
+    const assignedTo = this.laptopForm.get('assigned_to');
+    const assignedDate = this.laptopForm.get('assigned_date');
+    
+    if (this.isLaptopAssigned()) {
+      // If assigning to someone, make date required
+      assignedDate?.setValidators([Validators.required]);
+      assignedDate?.updateValueAndValidity();
+    } else {
+      // If not assigning, clear date and remove validators
+      assignedDate?.clearValidators();
+      assignedDate?.updateValueAndValidity();
+      assignedDate?.setValue('');
+    }
+  }
+
+  // Check if form is valid considering assignment logic
+  isFormValid(): boolean {
+    if (this.laptopForm.get('asset_tag')?.invalid || 
+        this.laptopForm.get('make')?.invalid) {
+      return false;
+    }
+    
+    // If assigning to someone, both assigned_to and assigned_date are required
+    if (this.isLaptopAssigned()) {
+      return !this.laptopForm.get('assigned_to')?.invalid && 
+             !this.laptopForm.get('assigned_date')?.invalid;
+    }
+    
+    return true;
   }
 }

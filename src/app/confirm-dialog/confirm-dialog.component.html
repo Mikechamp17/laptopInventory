@@ -1,22 +1,31 @@
-<h2 mat-dialog-title>
-  <mat-icon class="mr-16" [color]="data.confirmColor || 'warn'">warning</mat-icon>
-  {{ data.title }}
-</h2>
+<div class="confirm-dialog">
+  <div class="dialog-header">
+    <div class="warning-icon">
+      <mat-icon [color]="data.confirmColor || 'warn'">warning</mat-icon>
+    </div>
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+  </div>
 
-<mat-dialog-content>
-  <p>{{ data.message }}</p>
-</mat-dialog-content>
+  <mat-dialog-content>
+    <div class="dialog-message">
+      <p [innerHTML]="safeMessage"></p>
+    </div>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button 
-          [mat-dialog-close]="false"
-          class="mr-16">
-    {{ data.cancelText || 'Cancel' }}
-  </button>
-  
-  <button mat-raised-button 
-          [color]="data.confirmColor || 'warn'"
-          [mat-dialog-close]="true">
-    {{ data.confirmText || 'Confirm' }}
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button 
+            [mat-dialog-close]="false"
+            class="cancel-btn">
+      <mat-icon>close</mat-icon>
+      {{ data.cancelText || 'Cancel' }}
+    </button>
+    
+    <button mat-raised-button 
+            [color]="data.confirmColor || 'warn'"
+            [mat-dialog-close]="true"
+            class="confirm-btn">
+      <mat-icon>delete_forever</mat-icon>
+      {{ data.confirmText || 'Confirm' }}
+    </button>
+  </mat-dialog-actions>
+</div>

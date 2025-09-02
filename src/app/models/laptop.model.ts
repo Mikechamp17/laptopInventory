@@ -2,8 +2,8 @@ export interface Laptop {
   id?: string;
   asset_tag: string;
   make: string;
-  assigned_to: string;
-  assigned_date: string;
+  assigned_to?: string;
+  assigned_date?: string;
   returned: boolean;
   issues: string;
   notes: string;
@@ -12,7 +12,7 @@ export interface Laptop {
 }
 
 export interface LaptopStatus {
-  in_stock: Laptop[];
+  available: Laptop[];
   assigned: Laptop[];
   damaged: Laptop[];
 }

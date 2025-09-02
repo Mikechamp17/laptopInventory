@@ -40,16 +40,15 @@
 
         <div class="form-row">
           <mat-form-field class="form-field">
-            <mat-label>Assigned To *</mat-label>
+            <mat-label>Assigned To</mat-label>
             <input matInput 
                    formControlName="assigned_to" 
-                   placeholder="e.g., John Wick">
-            <mat-error *ngIf="laptopForm.get('assigned_to')?.hasError('required')">
-              Assigned person is required
-            </mat-error>
+                   placeholder="e.g., John Wick (leave blank if available)"
+                   (input)="onAssignmentChange()">
+            <mat-hint>Leave blank if the laptop is available and not assigned to anyone</mat-hint>
           </mat-form-field>
           
-          <mat-form-field class="form-field">
+          <mat-form-field class="form-field" *ngIf="isLaptopAssigned()">
             <mat-label>Assigned Date *</mat-label>
             <input matInput 
                    [matDatepicker]="assignedDatePicker" 
@@ -64,12 +63,20 @@
             </mat-datepicker>
             <mat-hint>Click the calendar icon to select a date</mat-hint>
             <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('required')">
-              Assigned date is required
+              Assigned date is required when assigning to someone
             </mat-error>
             <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('matDatepickerMax')">
               Date cannot be in the future
             </mat-error>
           </mat-form-field>
+        </div>
+
+        <!-- Status indicator -->
+        <div class="form-row" *ngIf="!isLaptopAssigned()">
+          <div class="status-indicator">
+            <mat-icon class="status-icon available">inventory_2</mat-icon>
+            <span class="status-text">This laptop will be marked as <strong>Available</strong> in inventory</span>
+          </div>
         </div>
 
         <div class="form-row">
@@ -112,7 +119,7 @@
           <button mat-raised-button 
                   type="submit" 
                   color="primary"
-                  [disabled]="laptopForm.invalid || loading">
+                  [disabled]="!isFormValid() || loading">
             <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
             <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
             {{ isEditMode ? 'Update' : 'Add' }} Laptop

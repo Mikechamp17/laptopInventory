@@ -92,6 +92,28 @@ body {
   flex: 1;
 }
 
+/* Enhanced Dialog Styles */
+.delete-dialog-panel {
+  .mat-mdc-dialog-container {
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  
+  .mat-mdc-dialog-surface {
+    border-radius: 16px;
+    padding: 0;
+  }
+}
+
+/* General dialog improvements */
+.mat-mdc-dialog-container {
+  .mat-mdc-dialog-surface {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .form-row {

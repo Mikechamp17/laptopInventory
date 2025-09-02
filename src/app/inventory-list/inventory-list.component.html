@@ -1,35 +1,15 @@
 <div class="inventory-container">
-  <!-- Single Clean Header -->
-  <div class="clean-header">
-    <div class="header-main">
-      <div class="header-title-section">
-        <div class="company-logo">
-          <img src="assets/images/whitehat-gaming-logo.png" 
-               alt="WHITEHAT GAMING" 
-               class="logo-image">
-        </div>
-        <div class="title-divider"></div>
-        <div class="title-icon">
-          <mat-icon>laptop_mac</mat-icon>
-        </div>
-        <div class="title-content">
-          <h1>Laptop Inventory</h1>
-          <p>Track and manage all laptops efficiently</p>
-        </div>
-      </div>
-      
-              <div class="header-actions">
-          <div class="search-section">
-            <mat-form-field class="search-field" appearance="outline">
-              <mat-label>Search laptops</mat-label>
-              <input matInput 
-                     [(ngModel)]="searchTerm" 
-                     (input)="onSearchInput()"
-                     placeholder="Search by asset tag, assigned to, or make...">
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
-          </div>
-        </div>
+  <!-- Simple Search Header -->
+  <div class="search-header">
+    <div class="search-container">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search laptops</mat-label>
+        <input matInput 
+               [(ngModel)]="searchTerm" 
+               (input)="onSearchInput()"
+               placeholder="Search by asset tag, assigned to, or make...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
     </div>
   </div>
 
@@ -41,13 +21,6 @@
             class="add-laptop-btn">
       <mat-icon>add</mat-icon>
       Add New Laptop
-    </button>
-    
-    <button mat-stroked-button 
-            routerLink="/settings" 
-            class="settings-btn">
-      <mat-icon>settings</mat-icon>
-      Settings
     </button>
   </div>
   
@@ -62,6 +35,12 @@
                   (click)="selectStatus('all')"
                   class="filter-button">
             All
+          </button>
+          <button mat-stroked-button 
+                  [class.active]="selectedStatus === 'available'"
+                  (click)="selectStatus('available')"
+                  class="filter-button">
+            Available
           </button>
           <button mat-stroked-button 
                   [class.active]="selectedStatus === 'in_stock'"
@@ -92,15 +71,6 @@
           </button>
           
           <button mat-raised-button 
-                  (click)="exportToExcel()" 
-                  [disabled]="filteredLaptops.length === 0"
-                  matTooltip="Export to Excel-compatible CSV"
-                  class="excel-button">
-            <mat-icon>table_chart</mat-icon>
-            Export Excel
-          </button>
-          
-          <button mat-raised-button 
                   (click)="exportToGoogleSheets()" 
                   [disabled]="filteredLaptops.length === 0"
                   matTooltip="Export to Google Sheets"
@@ -108,18 +78,25 @@
             <mat-icon>table_chart</mat-icon>
             Export to Sheets
           </button>
+          
+          <button mat-stroked-button 
+                  routerLink="/settings" 
+                  class="settings-btn">
+            <mat-icon>settings</mat-icon>
+            Settings
+          </button>
         </div>
       </div>
 
       <!-- Status Summary -->
       <div class="status-summary">
-        <div class="status-card in-stock">
+        <div class="status-card available">
           <div class="status-icon">
             <mat-icon>inventory_2</mat-icon>
           </div>
           <div class="status-content">
-            <div class="status-count">{{ statusSummary.in_stock.length }}</div>
-            <div class="status-label">In Stock</div>
+            <div class="status-count">{{ statusSummary.available.length }}</div>
+            <div class="status-label">Available</div>
           </div>
         </div>
         
