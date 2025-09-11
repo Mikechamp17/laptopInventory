@@ -14,6 +14,126 @@
   }
 }
 
+// Assignment History Column - Enhanced Styling
+.assignment-history {
+  max-width: 280px;
+  
+  .history-item {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    border-left: 4px solid #6c757d;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &.current-assignment {
+      border-left-color: #28a745;
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      
+      .current-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 14px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+      }
+    }
+    
+    .history-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      
+      .person-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        color: #495057;
+      }
+      
+      .history-person {
+        font-weight: 700;
+        color: #212529;
+        font-size: 14px;
+        flex: 1;
+        line-height: 1.2;
+      }
+    }
+    
+    .history-dates {
+      .date-range {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #6c757d;
+        
+        .date-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          margin-right: 6px;
+          color: #6c757d;
+        }
+        
+        .from-date {
+          font-weight: 600;
+          color: #495057;
+        }
+        
+        .date-separator {
+          margin: 0 8px;
+          color: #adb5bd;
+          font-weight: 500;
+          font-size: 11px;
+        }
+        
+        .to-date {
+          color: #6c757d;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.no-history {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 13px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px;
+  border: 2px dashed #dee2e6;
+  text-align: center;
+  
+  .no-history-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    color: #adb5bd;
+  }
+}
+
 // Filter chips styles
 .filter-chips {
   display: flex;
@@ -25,15 +145,15 @@
 }
 
 .filter-button {
-  border-radius: 24px;
-  padding: 12px 24px;
+  border-radius: 16px;
+  padding: 8px 16px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
   transition: all 0.3s ease;
   border: 1px solid #e0e0e0;
   background: white;
   color: #666;
-  min-width: 90px;
+  min-width: 70px;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   
@@ -41,16 +161,16 @@
     background: #f8f9fa;
     border-color: #2196f3;
     color: #1976d2;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(33, 150, 243, 0.15);
   }
   
   &.active {
     background: linear-gradient(135deg, #2196f3, #1976d2);
     color: white;
     border-color: #1976d2;
-    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    transform: translateY(-1px);
   }
 }
 
@@ -84,21 +204,21 @@
 
 // Export button styles
 .export-button {
-  border-radius: 24px;
-  padding: 12px 24px;
+  border-radius: 16px;
+  padding: 8px 16px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
   transition: all 0.3s ease;
   background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
   border: none;
-  min-width: 130px;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+  min-width: 100px;
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
   
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #45a049, #4caf50);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   }
   
   &:disabled {
@@ -110,10 +230,69 @@
   }
   
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+  }
+}
+
+// Software status styles
+.software-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  
+  .software-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #e9ecef;
+    }
+    
+    .software-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #666;
+    }
+    
+    .software-name {
+      font-weight: 600;
+      color: #666;
+      flex: 1;
+    }
+    
+    .status-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #f44336; // Red for not installed
+      
+      &.installed {
+        color: #4caf50; // Green for installed
+      }
+    }
+    
+    &.installed {
+      background: #e8f5e8;
+      
+      .software-name {
+        color: #4caf50;
+        font-weight: 700;
+      }
+      
+      .software-icon {
+        color: #4caf50;
+      }
+    }
   }
 }
 
@@ -277,164 +456,6 @@
 @keyframes loading {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
-}
-
-// Responsive design
-@media (max-width: 768px) {
-  .inventory-container {
-    padding: 16px;
-  }
-  
-  .filter-chips {
-    flex-direction: column;
-    align-items: stretch;
-    
-    button {
-      width: 100%;
-    }
-  }
-  
-  .filter-status {
-    flex-direction: column;
-    align-items: stretch;
-    
-    button {
-      margin-left: 0;
-      margin-top: 8px;
-    }
-  }
-  
-  .mat-mdc-table {
-    font-size: 14px;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  // Mobile header
-  .enhanced-header {
-    margin-bottom: 16px;
-    border-radius: 12px;
-    
-    .header-content {
-      flex-direction: column;
-      gap: 20px;
-      padding: 24px 20px;
-      text-align: center;
-    }
-    
-    .header-left {
-      flex-direction: column;
-      gap: 16px;
-    }
-    
-    .header-icon {
-      width: 56px;
-      height: 56px;
-      
-      mat-icon {
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
-      }
-    }
-    
-    .header-text {
-      .main-title {
-        font-size: 28px;
-      }
-      
-      .subtitle {
-        font-size: 14px;
-      }
-    }
-    
-    .header-right {
-      .quick-stats {
-        .stat-item {
-          padding: 10px 14px;
-          
-          span {
-            font-size: 13px;
-          }
-        }
-      }
-    }
-  }
-  
-  // Mobile status summary
-  .status-summary {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin: 16px 0;
-  }
-  
-  .status-card {
-    padding: 16px;
-    
-    .status-icon {
-      width: 40px;
-      height: 40px;
-      
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-    }
-    
-    .status-content {
-      .status-count {
-        font-size: 24px;
-      }
-      
-      .status-label {
-        font-size: 12px;
-      }
-    }
-  }
-}
-
-// Responsive design for filter and export buttons
-@media (max-width: 768px) {
-  .search-filter-section {
-    .filter-chips {
-      gap: 12px;
-      justify-content: center;
-      
-      .filter-button,
-      .export-button,
-      .google-sheets-button,
-      .settings-btn {
-        padding: 10px 20px;
-        font-size: 13px;
-        min-width: auto;
-        flex: 1;
-        max-width: 140px;
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .search-filter-section {
-    .filter-chips {
-      flex-direction: column;
-      gap: 10px;
-      
-      .filter-button,
-      .export-button,
-      .google-sheets-button,
-      .settings-btn {
-        width: 100%;
-        max-width: none;
-        padding: 12px 20px;
-        font-size: 14px;
-      }
-    }
-  }
 }
 
 // Status Summary
@@ -635,54 +656,6 @@
   }
 }
 
-  // Mobile header
-  .clean-header {
-    margin-bottom: 16px;
-    padding: 20px;
-    
-    .header-main {
-      flex-direction: column;
-      gap: 20px;
-      align-items: stretch;
-    }
-    
-    .header-title-section {
-      justify-content: center;
-      text-align: center;
-    }
-    
-    .title-icon {
-      width: 44px;
-      height: 44px;
-      
-      mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
-      }
-    }
-    
-    .title-content {
-      h1 {
-        font-size: 24px;
-      }
-      
-      p {
-        font-size: 13px;
-      }
-    }
-    
-    .header-actions {
-      align-items: stretch;
-      
-      .search-section {
-        .search-field {
-          width: 100%;
-        }
-      }
-    }
-  }
-
 // Quick Actions Bar
 .quick-actions {
   display: flex;
@@ -739,5 +712,200 @@
     width: 18px;
     height: 18px;
     margin-right: 8px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .inventory-container {
+    padding: 16px;
+  }
+  
+  .filter-chips {
+    flex-direction: column;
+    align-items: stretch;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .filter-status {
+    flex-direction: column;
+    align-items: stretch;
+    
+    button {
+      margin-left: 0;
+      margin-top: 8px;
+    }
+  }
+  
+  .mat-mdc-table {
+    font-size: 14px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  // Mobile header
+  .clean-header {
+    margin-bottom: 16px;
+    padding: 20px;
+    
+    .header-main {
+      flex-direction: column;
+      gap: 20px;
+      align-items: stretch;
+    }
+    
+    .header-title-section {
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .title-icon {
+      width: 44px;
+      height: 44px;
+      
+      mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
+    }
+    
+    .title-content {
+      h1 {
+        font-size: 24px;
+      }
+      
+      p {
+        font-size: 13px;
+      }
+    }
+    
+    .header-actions {
+      align-items: stretch;
+      
+      .search-section {
+        .search-field {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  // Mobile status summary
+  .status-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  
+  .status-card {
+    padding: 16px;
+    
+    .status-icon {
+      width: 40px;
+      height: 40px;
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .status-content {
+      .status-count {
+        font-size: 24px;
+      }
+      
+      .status-label {
+        font-size: 12px;
+      }
+    }
+  }
+  
+  // Assignment history mobile adjustments
+  .assignment-history {
+    max-width: 200px;
+    
+    .history-item {
+      padding: 10px 12px;
+      
+      .history-header {
+        .person-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+        
+        .history-person {
+          font-size: 13px;
+        }
+      }
+      
+      .history-dates {
+        .date-range {
+          font-size: 11px;
+          
+          .date-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+    }
+  }
+  
+  .no-history {
+    padding: 20px 16px;
+    font-size: 12px;
+    
+    .no-history-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Responsive design for filter and export buttons
+@media (max-width: 768px) {
+  .search-filter-section {
+    .filter-chips {
+      gap: 10px;
+      justify-content: center;
+      
+      .filter-button,
+      .export-button {
+        padding: 6px 12px;
+        font-size: 11px;
+        min-width: auto;
+        flex: 1;
+        max-width: 120px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .search-filter-section {
+    .filter-chips {
+      flex-direction: column;
+      gap: 8px;
+      
+      .filter-button,
+      .export-button {
+        width: 100%;
+        max-width: none;
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
   }
 }

@@ -8,6 +8,11 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
+import { provideState, provideStore } from '@ngrx/store';
+import { inventoryReducer } from './inventory-store/inventory.reducer';
+import { InvenotryEffects } from './inventory-store/inventory.effects';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +21,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth())
-  ]
+    provideAuth(() => getAuth()),
+    provideStore(),
+    provideState({ name: 'inventory', reducer: inventoryReducer }),
+    provideEffects(InvenotryEffects),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: false,
+    }),
+]
 };

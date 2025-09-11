@@ -71,6 +71,24 @@
           </mat-form-field>
         </div>
 
+        <!-- Software Installation Status -->
+        <div class="form-row">
+          <div class="software-section">
+            <h3 class="section-title">Software Installation Status</h3>
+            <div class="software-toggles">
+              <mat-checkbox formControlName="jumpcloud_installed" class="software-toggle">
+                <mat-icon class="toggle-icon">cloud</mat-icon>
+                JumpCloud Installed
+              </mat-checkbox>
+              
+              <mat-checkbox formControlName="webroot_installed" class="software-toggle">
+                <mat-icon class="toggle-icon">security</mat-icon>
+                Webroot Installed
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
         <!-- Status indicator -->
         <div class="form-row" *ngIf="!isLaptopAssigned()">
           <div class="status-indicator">

@@ -1,3 +1,9 @@
+export interface AssignmentHistory {
+  assigned_to: string;
+  from_date: string;
+  to_date: string;
+}
+
 export interface Laptop {
   id?: string;
   asset_tag: string;
@@ -7,6 +13,9 @@ export interface Laptop {
   returned: boolean;
   issues: string;
   notes: string;
+  assignment_history: AssignmentHistory[];
+  jumpcloud_installed: boolean;
+  webroot_installed: boolean;
   created_at?: Date;
   updated_at?: Date;
 }

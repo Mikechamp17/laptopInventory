@@ -12,10 +12,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, filter } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Actions, ofType } from '@ngrx/effects';
 
 import { LaptopService } from '../services/laptop.service';
 import { Laptop } from '../models/laptop.model';
+import { InvetoryState } from '../inventory-store/inventory.reducer';
+import * as InvetoryActions from '../inventory-store/inventory.actions';
+import { selectInvenotryLoading, selectInventoryError } from '../inventory-store/inventory.selectors';
 
 @Component({
   selector: 'app-laptop-form',
@@ -54,7 +59,9 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     private laptopService: LaptopService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private store: Store<InvetoryState>,
+    private actions$: Actions
   ) {
     this.laptopForm = this.createForm();
   }
@@ -66,6 +73,28 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
         this.laptopId = params['id'];
         this.loadLaptop();
       }
+    });
+
+    // Subscribe to NgRx loading state
+    this.store.select(selectInvenotryLoading).pipe(takeUntil(this.destroy$)).subscribe(loading => {
+      this.loading = loading;
+    });
+
+    // Subscribe to NgRx error state
+    this.store.select(selectInventoryError).pipe(takeUntil(this.destroy$)).subscribe(error => {
+      if (error) {
+        this.snackBar.open('Error: ' + error.message, 'Close', { duration: 3000 });
+        this.loading = false;
+      }
+    });
+
+    // Listen for add laptop success action
+    this.actions$.pipe(
+      ofType(InvetoryActions.addLaptopSuccess),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.snackBar.open('Laptop added successfully', 'Close', { duration: 3000 });
+      this.router.navigate(['/inventory']);
     });
   }
 
@@ -82,7 +111,9 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
       assigned_date: [''],
       returned: [false],
       issues: [''],
-      notes: ['']
+      notes: [''],
+      jumpcloud_installed: [false],
+      webroot_installed: [false]
     });
   }
 
@@ -102,7 +133,9 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
               assigned_date: laptop.assigned_date,
               returned: laptop.returned,
               issues: laptop.issues || '',
-              notes: laptop.notes || ''
+              notes: laptop.notes || '',
+              jumpcloud_installed: laptop.jumpcloud_installed || false,
+              webroot_installed: laptop.webroot_installed || false
             });
           } else {
             this.snackBar.open('Laptop not found', 'Close', { duration: 3000 });
@@ -122,46 +155,125 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (!this.isFormValid()) return;
 
-    this.loading = true;
     const formValue = this.laptopForm.value;
     
     // Format the date properly for Firebase (only if assigned)
+    const assignmentHistory = this.manageAssignmentHistory(formValue);
+    console.log('Assignment History:', assignmentHistory);
+    
     const laptopData: Omit<Laptop, 'id'> = {
       ...formValue,
       assigned_date: this.isLaptopAssigned() ? 
         this.formatDateForFirebase(formValue.assigned_date) : '',
-      assigned_to: this.isLaptopAssigned() ? formValue.assigned_to : ''
+      assigned_to: this.isLaptopAssigned() ? formValue.assigned_to : '',
+      assignment_history: assignmentHistory
     };
+    
+    console.log('Laptop Data being saved:', laptopData);
 
     if (this.isEditMode && this.laptopId) {
-      this.laptopService.updateLaptop(this.laptopId, laptopData)
+      // For edit mode, we need to load current laptop data to manage assignment history
+      this.laptopService.getLaptopById(this.laptopId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
-            this.snackBar.open('Laptop updated successfully', 'Close', { duration: 3000 });
-            this.router.navigate(['/inventory']);
+          next: (currentLaptop) => {
+            if (currentLaptop) {
+              const updatedAssignmentHistory = this.updateAssignmentHistory(currentLaptop, formValue);
+              console.log('Current Laptop:', currentLaptop);
+              console.log('Updated Assignment History:', updatedAssignmentHistory);
+              
+              const updatedLaptopData = {
+                ...laptopData,
+                assignment_history: updatedAssignmentHistory
+              };
+              
+              console.log('Updated Laptop Data:', updatedLaptopData);
+              
+              this.laptopService.updateLaptop(this.laptopId!, updatedLaptopData)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                  next: () => {
+                    this.snackBar.open('Laptop updated successfully', 'Close', { duration: 3000 });
+                    this.router.navigate(['/inventory']);
+                  },
+                  error: (error) => {
+                    console.error('Error updating laptop:', error);
+                    this.snackBar.open('Error updating laptop', 'Close', { duration: 3000 });
+                    this.loading = false;
+                  }
+                });
+            }
           },
           error: (error) => {
-            console.error('Error updating laptop:', error);
-            this.snackBar.open('Error updating laptop', 'Close', { duration: 3000 });
+            console.error('Error loading laptop:', error);
+            this.snackBar.open('Error loading laptop', 'Close', { duration: 3000 });
             this.loading = false;
           }
         });
     } else {
-      this.laptopService.addLaptop(laptopData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.snackBar.open('Laptop added successfully', 'Close', { duration: 3000 });
-            this.router.navigate(['/inventory']);
-          },
-          error: (error) => {
-            console.error('Error adding laptop:', error);
-            this.snackBar.open('Error adding laptop', 'Close', { duration: 3000 });
-            this.loading = false;
-          }
-        });
+      // Use NgRx action for adding new laptops
+      this.store.dispatch(InvetoryActions.addLaptop({ laptop: laptopData }));
     }
+  }
+
+  // Manage assignment history based on current form values
+  private manageAssignmentHistory(formValue: any): any[] {
+    // For new laptops, if assigned, create initial history entry
+    if (this.isLaptopAssigned() && formValue.assigned_to && formValue.assigned_date) {
+      return [{
+        assigned_to: formValue.assigned_to,
+        from_date: this.formatDateForFirebase(formValue.assigned_date),
+        to_date: '' // Will be filled when laptop is returned/reassigned
+      }];
+    }
+    
+    // Return empty array for new laptops without assignment
+    return [];
+  }
+
+  // Update assignment history when laptop assignment changes
+  private updateAssignmentHistory(currentLaptop: Laptop, formValue: any): any[] {
+    const currentHistory = currentLaptop.assignment_history || [];
+    
+    // If laptop is being assigned and wasn't assigned before
+    if (this.isLaptopAssigned() && formValue.assigned_to && !currentLaptop.assigned_to) {
+      return [...currentHistory, {
+        assigned_to: formValue.assigned_to,
+        from_date: this.formatDateForFirebase(formValue.assigned_date),
+        to_date: ''
+      }];
+    }
+    
+    // If laptop is being returned
+    if (formValue.returned && currentLaptop.assigned_to) {
+      const updatedHistory = [...currentHistory];
+      const lastEntry = updatedHistory[updatedHistory.length - 1];
+      if (lastEntry && !lastEntry.to_date) {
+        lastEntry.to_date = new Date().toISOString().split('T')[0];
+      }
+      return updatedHistory;
+    }
+    
+    // If assignment is being changed (reassigned to someone else)
+    if (this.isLaptopAssigned() && formValue.assigned_to && 
+        currentLaptop.assigned_to && formValue.assigned_to !== currentLaptop.assigned_to) {
+      // Close the previous assignment
+      const updatedHistory = [...currentHistory];
+      const lastEntry = updatedHistory[updatedHistory.length - 1];
+      if (lastEntry && !lastEntry.to_date) {
+        lastEntry.to_date = new Date().toISOString().split('T')[0];
+      }
+      
+      // Add new assignment
+      return [...updatedHistory, {
+        assigned_to: formValue.assigned_to,
+        from_date: this.formatDateForFirebase(formValue.assigned_date),
+        to_date: ''
+      }];
+    }
+    
+    // Return current history if no changes
+    return currentHistory;
   }
 
   // Helper method to format date for Firebase

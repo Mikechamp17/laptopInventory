@@ -157,7 +157,10 @@ export class GoogleSheetsService {
       assigned_date: data.assigned_date || data.assigned_date || '',
       returned: data.returned === 'Yes' || data.returned === 'true' || data.returned === true,
       issues: data.issues || '',
-      notes: data.notes || ''
+      notes: data.notes || '',
+      assignment_history: [],
+      jumpcloud_installed: data.jumpcloud_installed === 'Yes' || data.jumpcloud_installed === 'true' || data.jumpcloud_installed === true,
+      webroot_installed: data.webroot_installed === 'Yes' || data.webroot_installed === 'true' || data.webroot_installed === true
     };
   }
 

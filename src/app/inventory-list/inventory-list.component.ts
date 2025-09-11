@@ -15,9 +15,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { LaptopService } from '../services/laptop.service';
-import { GoogleSheetsService, GoogleSheetsConfig } from '../services/google-sheets.service';
 import { Laptop, LaptopStatus } from '../models/laptop.model';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { Store } from '@ngrx/store';
+import { InvetoryState } from '../inventory-store/inventory.reducer';
+import { Actions } from '@ngrx/effects';
+
+import * as InvetoryActions from '../inventory-store/inventory.actions';
+import { selectInventory, selectInvenotryLoading, selectInventoryError } from '../inventory-store/inventory.selectors';
 
 @Component({
   selector: 'app-inventory-list',
@@ -47,16 +52,16 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedStatus = 'all';
   
-  displayedColumns = ['asset_tag', 'make', 'assigned_to', 'assigned_date', 'status', 'issues', 'actions'];
+  displayedColumns = ['asset_tag', 'make', 'assigned_to', 'assigned_date', 'software_status', 'assignment_history', 'status', 'issues', 'actions'];
   
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
   constructor(
     private laptopService: LaptopService,
-    private googleSheetsService: GoogleSheetsService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private store: Store<InvetoryState>,
   ) {
     // Debounce search input
     this.searchSubject.pipe(
@@ -69,9 +74,35 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadInventory();
+    this.store.dispatch(InvetoryActions.getInvenotry());
 
-    
+    // Listen for inventory changes (existing code)
+    this.store.select(selectInventory).subscribe({
+      next: (status: any) => {
+        console.log('inside store select', status);
+        // Check if status has the inventory property (full state) or is directly LaptopStatus
+        const laptopStatus = status.inventory || status;
+        this.statusSummary = laptopStatus;
+        this.laptops = [
+          ...laptopStatus.available,
+          ...laptopStatus.assigned,
+          ...laptopStatus.damaged
+        ];
+        this.filteredLaptops = [...this.laptops];
+        this.loading = false;
+      }
+    });
+
+    // NEW: Listen for add laptop success/error
+    this.store.select(selectInvenotryLoading).subscribe(loading => {
+      this.loading = loading;
+    });
+
+    this.store.select(selectInventoryError).subscribe(error => {
+      if (error) {
+        this.snackBar.open(`Error: ${error}`, 'Close', { duration: 5000 });
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -79,28 +110,70 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadInventory(): void {
-    this.loading = true;
-    this.laptopService.getLaptopsByStatus()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (status) => {
-          this.statusSummary = status;
-          this.laptops = [
-            ...status.available,
-            ...status.assigned,
-            ...status.damaged
-          ];
-          this.filteredLaptops = [...this.laptops];
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading inventory:', error);
-          this.loading = false;
-          this.snackBar.open('Error loading inventory', 'Close', { duration: 3000 });
-        }
-      });
+  // Add Laptop method using NgRx
+  addLaptop(laptop: Omit<Laptop, 'id'>): void {
+    console.log('🎯 Dispatching addLaptop action:', laptop);
+    
+    // Dispatch the action
+    this.store.dispatch(InvetoryActions.addLaptop({ laptop }));
+    
+    // Show loading message
+    this.snackBar.open('Adding laptop...', 'Close', { duration: 2000 });
   }
+
+  // Test method to add a sample laptop
+  testAddLaptop(): void {
+    const testLaptop: Omit<Laptop, 'id'> = {
+      asset_tag: `TEST-${Date.now()}`,
+      make: 'Dell',
+      assigned_to: 'Test User',
+      assigned_date: '2025-01-15',
+      returned: false,
+      issues: '',
+      notes: 'Test laptop added via NgRx',
+      assignment_history: [{
+        assigned_to: 'Test User',
+        from_date: '2025-01-15',
+        to_date: ''
+      }],
+      jumpcloud_installed: false,
+      webroot_installed: false
+    };
+    
+    this.addLaptop(testLaptop);
+  }
+
+  // Debug method to log assignment history
+  debugAssignmentHistory(): void {
+    console.log('Current laptops:', this.laptops);
+    this.laptops.forEach(laptop => {
+      console.log(`Laptop ${laptop.asset_tag} assignment history:`, laptop.assignment_history);
+    });
+  }
+
+  // loadInventory(): void {
+
+  //   this.loading = true;
+  //   this.laptopService.getLaptopsByStatus()
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({
+  //       next: (status) => {
+  //         this.statusSummary = status;
+  //         this.laptops = [
+  //           ...status.available,
+  //           ...status.assigned,
+  //           ...status.damaged
+  //         ];
+  //         this.filteredLaptops = [...this.laptops];
+  //         this.loading = false;
+  //       },
+  //       error: (error) => {
+  //         console.error('Error loading inventory:', error);
+  //         this.loading = false;
+  //         this.snackBar.open('Error loading inventory', 'Close', { duration: 3000 });
+  //       }
+  //     });
+  // }
 
   onSearchInput(): void {
     this.searchSubject.next(this.searchTerm);
@@ -296,7 +369,8 @@ export class InventoryListComponent implements OnInit, OnDestroy {
           .subscribe({
             next: () => {
               this.snackBar.open('Laptop deleted successfully', 'Close', { duration: 3000 });
-              this.loadInventory();
+              // Refresh the inventory by dispatching the get action
+              this.store.dispatch(InvetoryActions.getInvenotry());
             },
             error: (error) => {
               console.error('Error deleting laptop:', error);
@@ -341,37 +415,6 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     this.snackBar.open('CSV exported successfully', 'Close', { duration: 3000 });
   }
 
-  exportToGoogleSheets(): void {
-    if (this.filteredLaptops.length === 0) {
-      this.snackBar.open('No data to export', 'Close', { duration: 3000 });
-      return;
-    }
-
-    const savedConfig = localStorage.getItem('googleSheetsConfig');
-    if (!savedConfig) {
-      this.snackBar.open('Please configure Google Sheets in Settings first', 'Close', { duration: 5000 });
-      return;
-    }
-
-    const config: GoogleSheetsConfig = JSON.parse(savedConfig);
-    if (!config.spreadsheetId || !config.apiKey) {
-      this.snackBar.open('Please configure Google Sheets in Settings first', 'Close', { duration: 5000 });
-      return;
-    }
-
-    this.snackBar.open('Exporting to Google Sheets...', 'Close', { duration: 2000 });
-
-    this.googleSheetsService.exportLaptopsToSheet(this.filteredLaptops, config)
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Successfully exported to Google Sheets!', 'Close', { duration: 3000 });
-        },
-        error: (error) => {
-          console.error('Error exporting to Google Sheets:', error);
-          this.snackBar.open(`Export failed: ${error.message}`, 'Close', { duration: 5000 });
-        }
-      });
-  }
 
   getLastUpdatedTime(): string {
     if (this.laptops.length === 0) {
@@ -408,8 +451,8 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     // Ctrl/Cmd + N to add new laptop
     if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
       event.preventDefault();
-      // Navigate to add page
-      window.location.href = '/add';
+      // Test the NgRx addLaptop functionality
+      this.testAddLaptop();
     }
     
     // Ctrl/Cmd + F to focus search
@@ -431,7 +474,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
           <div style="text-align: left;">
             <p><strong>Ctrl/Cmd + F:</strong> Focus search field</p>
             <p><strong>Ctrl/Cmd + E:</strong> Export to CSV</p>
-            <p><strong>Ctrl/Cmd + N:</strong> Add new laptop</p>
+            <p><strong>Ctrl/Cmd + N:</strong> Add test laptop (NgRx)</p>
             <p><strong>Enter:</strong> Submit forms</p>
             <p><strong>Escape:</strong> Close dialogs</p>
           </div>

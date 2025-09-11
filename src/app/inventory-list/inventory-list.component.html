@@ -43,12 +43,6 @@
             Available
           </button>
           <button mat-stroked-button 
-                  [class.active]="selectedStatus === 'in_stock'"
-                  (click)="selectStatus('in_stock')"
-                  class="filter-button">
-            In Stock
-          </button>
-          <button mat-stroked-button 
                   [class.active]="selectedStatus === 'assigned'"
                   (click)="selectStatus('assigned')"
                   class="filter-button">
@@ -68,22 +62,6 @@
                   class="export-button">
             <mat-icon>download</mat-icon>
             Export CSV
-          </button>
-          
-          <button mat-raised-button 
-                  (click)="exportToGoogleSheets()" 
-                  [disabled]="filteredLaptops.length === 0"
-                  matTooltip="Export to Google Sheets"
-                  class="google-sheets-button">
-            <mat-icon>table_chart</mat-icon>
-            Export to Sheets
-          </button>
-          
-          <button mat-stroked-button 
-                  routerLink="/settings" 
-                  class="settings-btn">
-            <mat-icon>settings</mat-icon>
-            Settings
           </button>
         </div>
       </div>
@@ -189,6 +167,60 @@
           <ng-container matColumnDef="assigned_date">
             <th mat-header-cell *matHeaderCellDef>Assigned Date</th>
             <td mat-cell *matCellDef="let laptop">{{ laptop.assigned_date | date:'shortDate' }}</td>
+          </ng-container>
+
+          <!-- Software Status Column -->
+          <ng-container matColumnDef="software_status">
+            <th mat-header-cell *matHeaderCellDef>Software</th>
+            <td mat-cell *matCellDef="let laptop">
+              <div class="software-status">
+                <div class="software-item" [class.installed]="laptop.jumpcloud_installed">
+                  <mat-icon class="software-icon">cloud</mat-icon>
+                  <span class="software-name">JumpCloud</span>
+                  <mat-icon class="status-icon" [class.installed]="laptop.jumpcloud_installed">
+                    {{ laptop.jumpcloud_installed ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </div>
+                <div class="software-item" [class.installed]="laptop.webroot_installed">
+                  <mat-icon class="software-icon">security</mat-icon>
+                  <span class="software-name">Webroot</span>
+                  <mat-icon class="status-icon" [class.installed]="laptop.webroot_installed">
+                    {{ laptop.webroot_installed ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Assignment History Column -->
+          <ng-container matColumnDef="assignment_history">
+            <th mat-header-cell *matHeaderCellDef>Assignment History</th>
+            <td mat-cell *matCellDef="let laptop">
+              <div class="assignment-history" *ngIf="laptop.assignment_history && laptop.assignment_history.length > 0; else noHistory">
+                <div class="history-item" *ngFor="let entry of laptop.assignment_history; let i = index" 
+                     [class.current-assignment]="!entry.to_date">
+                  <div class="history-header">
+                    <mat-icon class="person-icon">person</mat-icon>
+                    <span class="history-person">{{ entry.assigned_to }}</span>
+                    <span class="current-badge" *ngIf="!entry.to_date">Current</span>
+                  </div>
+                  <div class="history-dates">
+                    <div class="date-range">
+                      <mat-icon class="date-icon">schedule</mat-icon>
+                      <span class="from-date">{{ entry.from_date | date:'MMM d, y' }}</span>
+                      <span class="date-separator" *ngIf="entry.to_date">to</span>
+                      <span class="to-date" *ngIf="entry.to_date">{{ entry.to_date | date:'MMM d, y' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noHistory>
+                <div class="no-history">
+                  <mat-icon class="no-history-icon">history</mat-icon>
+                  <span>No assignment history</span>
+                </div>
+              </ng-template>
+            </td>
           </ng-container>
 
           <!-- Status Column -->
