@@ -1,0 +1,53 @@
+/* ========================================
+   CUSTOM ANGULAR MATERIAL THEME
+   ======================================== */
+
+@use '@angular/material' as mat;
+
+// Define custom color palettes
+$custom-primary: mat.define-palette(mat.$blue-palette, 600);
+$custom-accent: mat.define-palette(mat.$blue-palette, 400);
+$custom-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme
+$custom-theme: mat.define-light-theme((
+  color: (
+    primary: $custom-primary,
+    accent: $custom-accent,
+    warn: $custom-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Include theme styles for all components
+@include mat.all-component-themes($custom-theme);
+
+// Custom checkbox styling
+.mat-mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+  --mdc-checkbox-selected-focus-icon-color: #1976d2;
+  --mdc-checkbox-selected-hover-icon-color: #1976d2;
+  --mdc-checkbox-selected-icon-color: #1976d2;
+  --mdc-checkbox-unselected-focus-icon-color: #1976d2;
+  --mdc-checkbox-unselected-hover-icon-color: #1976d2;
+  --mdc-checkbox-unselected-icon-color: #666666;
+}
+
+// Custom form field styling
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-focus-outline-color: #1976d2;
+  --mdc-outlined-text-field-focus-label-text-color: #1976d2;
+  --mdc-outlined-text-field-outline-color: #e0e0e0;
+}
+
+// Custom button styling
+.mat-mdc-raised-button {
+  --mdc-filled-button-container-color: #1976d2;
+  --mdc-filled-button-label-text-color: #ffffff;
+}
+
+.mat-mdc-outlined-button {
+  --mdc-outlined-button-outline-color: #1976d2;
+  --mdc-outlined-button-label-text-color: #1976d2;
+}

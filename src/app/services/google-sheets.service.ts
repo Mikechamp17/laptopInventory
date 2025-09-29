@@ -49,13 +49,14 @@ export class GoogleSheetsService {
 
   // Export laptops to Google Sheets
   exportLaptopsToSheet(laptops: Laptop[], config: GoogleSheetsConfig): Observable<any> {
-    const headers = ['Asset Tag', 'Make', 'Assigned To', 'Assigned Date', 'Returned', 'Issues', 'Notes'];
+    const headers = ['Asset Tag', 'Make', 'Assigned To', 'Assigned Date', 'Returned', 'Damaged', 'Issues', 'Notes'];
     const data = laptops.map(laptop => [
       laptop.asset_tag,
       laptop.make,
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
+      laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
       laptop.notes || ''
     ]);
@@ -83,6 +84,7 @@ export class GoogleSheetsService {
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
+      laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
       laptop.notes || ''
     ];
@@ -109,11 +111,12 @@ export class GoogleSheetsService {
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
+      laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
       laptop.notes || ''
     ];
     
-    const range = `${config.range.split('!')[0]}!A${rowIndex + 2}:G${rowIndex + 2}`;
+    const range = `${config.range.split('!')[0]}!A${rowIndex + 2}:H${rowIndex + 2}`;
     const url = `${this.GOOGLE_SHEETS_API}/${config.spreadsheetId}/values/${range}?valueInputOption=RAW&key=${config.apiKey}`;
     
     return this.http.put(url, { values: [row] }, {
@@ -156,6 +159,7 @@ export class GoogleSheetsService {
       assigned_to: data.assigned_to || data.assigned_to || '',
       assigned_date: data.assigned_date || data.assigned_date || '',
       returned: data.returned === 'Yes' || data.returned === 'true' || data.returned === true,
+      damaged: data.damaged === 'Yes' || data.damaged === 'true' || data.damaged === true,
       issues: data.issues || '',
       notes: data.notes || '',
       assignment_history: [],

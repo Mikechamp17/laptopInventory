@@ -1,13 +1,74 @@
 .laptop-form {
-  margin-top: 16px;
+  margin-top: 8px;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-header {
+  margin-bottom: 16px;
+  
+  .form-title {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .form-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.form-row {
+  margin-bottom: 16px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 16px;
   gap: 16px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    mat-icon {
+      font-size: 18px;
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      min-height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      overflow: visible;
+    }
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
 }
 
 .form-field {
@@ -32,19 +93,161 @@ input[matInput][readonly] {
   }
 }
 
-// Date picker calendar improvements
-::ng-deep .mat-calendar {
+
+// Fix datepicker positioning and styling
+::ng-deep .mat-datepicker-content {
+  position: fixed !important;
+  z-index: 1000 !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 320px !important;
+  max-width: 320px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  background: white !important;
+  border: 1px solid #e0e0e0 !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-datepicker-popup {
+  position: fixed !important;
+  z-index: 1000 !important;
+}
+
+// Add small X close button in top right corner
+::ng-deep .mat-datepicker-content {
+  position: relative !important;
+}
+
+::ng-deep .mat-datepicker-content::after {
+  content: "×" !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  width: 20px !important;
+  height: 20px !important;
+  background: #f5f5f5 !important;
+  border: 1px solid #ddd !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  color: #666 !important;
+  cursor: pointer !important;
+  z-index: 1001 !important;
+  line-height: 1 !important;
+  transition: all 0.2s ease !important;
+  pointer-events: auto !important;
+}
+
+::ng-deep .mat-datepicker-content::after:hover {
+  background: #e0e0e0 !important;
+  color: #333 !important;
+}
+
+// Remove the default close button completely
+::ng-deep .mat-datepicker-actions {
+  display: none !important;
+}
+
+// Fix calendar header - reduce padding and remove duplicate month display
+::ng-deep .mat-calendar-header {
+  padding: 8px 16px 4px 16px !important;
+  background: #f8f9fa !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  position: relative !important;
+  min-height: 32px !important;
+  
+  .mat-calendar-period-button {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+  }
+  
+  .mat-calendar-arrow {
+    color: #666 !important;
+    font-size: 16px !important;
+  }
+}
+
+// Hide day headers completely
+::ng-deep .mat-calendar-table-header {
+  display: none !important;
+}
+
+// Fix date numbers spacing and positioning - use more space
+::ng-deep .mat-calendar-body {
+  padding: 4px 12px 8px 12px !important;
+  
+  .mat-calendar-body-cell {
+    width: 14.28% !important;
+    height: 36px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
   .mat-calendar-body-cell-content {
-    border-radius: 50%;
-    
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+    line-height: 30px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    text-align: center !important;
+    display: inline-block !important;
+    margin: 0 auto !important;
+    vertical-align: middle !important;
+
     &.mat-calendar-body-selected {
-      background-color: #1976d2;
-      color: white;
+      background: #1976d2 !important;
+      color: white !important;
+      font-weight: 600 !important;
+    }
+
+    &:hover:not(.mat-calendar-body-selected) {
+      background: #e3f2fd !important;
+      color: #1976d2 !important;
     }
     
-    &:hover:not(.mat-calendar-body-selected) {
-      background-color: #e3f2fd;
+    &.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+      border: 2px solid #1976d2 !important;
+      color: #1976d2 !important;
+      font-weight: 600 !important;
     }
+  }
+}
+
+// Remove the large SEP overlay
+::ng-deep .mat-calendar-body-label {
+  display: none !important;
+}
+
+// Fix calendar table layout - use more space
+::ng-deep .mat-calendar-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+  
+  tr {
+    height: 36px !important;
+  }
+  
+  td {
+    width: 14.28% !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
   }
 }
 
@@ -52,37 +255,43 @@ input[matInput][readonly] {
 .status-indicator {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 12px;
   background: #e8f5e8;
   border: 1px solid #c8e6c9;
-  border-radius: 8px;
-  margin: 8px 0;
-  
+  border-radius: 6px;
+  margin: 4px 0;
+
   .status-icon.available {
     color: #4caf50;
-    font-size: 24px;
+    font-size: 20px;
     width: 24px;
     height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    overflow: visible;
   }
-  
+
   .status-text {
     color: #2e7d32;
-    font-size: 14px;
-    
+    font-size: 13px;
+
     strong {
       font-weight: 600;
     }
   }
 }
 
-// Software section styles
+// Software section styles - FRESH START
 .software-section {
   width: 100%;
-  margin-bottom: 16px;
   
   .section-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     margin-bottom: 12px;
     color: rgba(0, 0, 0, 0.87);
@@ -90,18 +299,95 @@ input[matInput][readonly] {
   
   .software-toggles {
     display: flex;
-    gap: 24px;
+    gap: 20px;
     flex-wrap: wrap;
     
     .software-toggle {
+      // Reset all Material checkbox styling
+      ::ng-deep {
+        .mat-mdc-checkbox {
+          // Remove default margins and padding
+          margin: 0;
+          padding: 0;
+          
+          // Make checkbox smaller and square
+          .mdc-checkbox {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            margin: 0;
+            
+            .mdc-checkbox__native-control {
+              width: 20px;
+              height: 20px;
+            }
+            
+            .mdc-checkbox__background {
+              width: 20px;
+              height: 20px;
+              border-radius: 2px;
+              border: 2px solid #666;
+            }
+            
+            .mdc-checkbox__checkmark {
+              width: 12px;
+              height: 12px;
+              left: 2px;
+              top: 2px;
+            }
+          }
+          
+          // Style the label container
+          .mat-mdc-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 8px;
+            padding: 0;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.2;
+            font-weight: 500;
+          }
+        }
+      }
+      
+      // Style the icon
+      .toggle-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: #666;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0;
+        line-height: 1;
+        overflow: visible;
+      }
+      
+      // Container styling
+      padding: 16px 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fafafa;
+      transition: all 0.2s ease;
+      min-height: 60px;
       display: flex;
       align-items: center;
       
-      .toggle-icon {
-        margin-right: 8px;
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+      &:hover {
+        background: #f0f0f0;
+        border-color: #ccc;
+      }
+      
+      // When checked
+      &.mat-checked {
+        background: #e3f2fd;
+        border-color: #2196f3;
+        
+        .toggle-icon {
+          color: #1976d2;
+        }
       }
     }
   }
@@ -121,7 +407,7 @@ input[matInput][readonly] {
   ::ng-deep .mat-datepicker-content {
     .mat-calendar {
       width: 100%;
-      max-width: 320px;
+      max-width: 300px;
     }
   }
   

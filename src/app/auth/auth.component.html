@@ -1,0 +1,169 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <img src="assets/images/whg-logo.png" 
+           alt="WhiteHat Gaming Logo" 
+           class="auth-logo">
+      <h1 class="auth-title">Laptop Inventory</h1>
+      <p class="auth-subtitle">Sign in to manage your laptop inventory</p>
+      <div class="subtle-hint">
+        <span>Secure company access</span>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        mat-button 
+        [class.active]="activeTab === 'login'"
+        (click)="switchTab('login')"
+        class="tab-button">
+        Login
+      </button>
+      <button 
+        mat-button 
+        [class.active]="activeTab === 'signup'"
+        (click)="switchTab('signup')"
+        class="tab-button">
+        Sign Up
+      </button>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Login Form -->
+    <form *ngIf="activeTab === 'login'" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Email Address</mat-label>
+        <input matInput 
+               type="email" 
+               formControlName="email"
+               placeholder="Enter your email address">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors">
+          {{ getFieldError(loginForm, 'email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'"
+               formControlName="password"
+               placeholder="Enter your password">
+        <button mat-icon-button 
+                matSuffix 
+                (click)="hidePassword = !hidePassword"
+                type="button">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors">
+          {{ getFieldError(loginForm, 'password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Remember Me -->
+      <div class="remember-me-section">
+        <mat-checkbox formControlName="rememberMe">
+          Remember me for 30 days
+        </mat-checkbox>
+      </div>
+
+      <!-- Forgot Password Link -->
+      <div class="forgot-password">
+        <button mat-button 
+                type="button" 
+                (click)="showForgotPassword()"
+                class="forgot-link">
+          Forgot your password?
+        </button>
+      </div>
+
+      <button mat-raised-button 
+              type="submit" 
+              color="primary"
+              [disabled]="loading || !loginForm.valid"
+              class="submit-button">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!loading">login</mat-icon>
+        {{ loading ? loadingMessage : 'Sign In' }}
+      </button>
+    </form>
+
+    <!-- Signup Form -->
+    <form *ngIf="activeTab === 'signup'" [formGroup]="signupForm" (ngSubmit)="onSignup()" class="auth-form">
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Email Address</mat-label>
+        <input matInput 
+               type="email" 
+               formControlName="email"
+               placeholder="Enter your email address">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.errors">
+          {{ getFieldError(signupForm, 'email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'"
+               formControlName="password"
+               placeholder="Create a password (min 8 characters)">
+        <button mat-icon-button 
+                matSuffix 
+                (click)="hidePassword = !hidePassword"
+                type="button">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.errors">
+          {{ getFieldError(signupForm, 'password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput 
+               [type]="hideConfirmPassword ? 'password' : 'text'"
+               formControlName="confirmPassword"
+               placeholder="Confirm your password">
+        <button mat-icon-button 
+                matSuffix 
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+                type="button">
+          <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        <mat-error *ngIf="signupForm.get('confirmPassword')?.touched && signupForm.get('confirmPassword')?.errors">
+          {{ getFieldError(signupForm, 'confirmPassword') }}
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button 
+              type="submit" 
+              color="primary"
+              [disabled]="loading || !signupForm.valid"
+              class="submit-button">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!loading">person_add</mat-icon>
+        {{ loading ? loadingMessage : 'Create Account' }}
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="auth-footer">
+      <p class="footer-text">
+        {{ activeTab === 'login' ? "Don't have an account?" : "Already have an account?" }}
+        <button mat-button 
+                (click)="switchTab(activeTab === 'login' ? 'signup' : 'login')"
+                class="switch-button">
+          {{ activeTab === 'login' ? 'Sign Up' : 'Log In' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

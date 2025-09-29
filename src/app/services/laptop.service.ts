@@ -74,24 +74,15 @@ export class LaptopService {
         };
 
         laptops.forEach(laptop => {
-          // If laptop has no assignment, it's available
-          if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
-            if (laptop.returned && laptop.issues && laptop.issues.trim() !== '') {
-              status.damaged.push(laptop);
-            } else {
-              status.available.push(laptop);
-            }
+          // If laptop is marked as damaged, it goes to damaged list regardless of assignment
+          if (laptop.damaged) {
+            status.damaged.push(laptop);
+          } else if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
+            // If laptop has no assignment and is not damaged, it's available
+            status.available.push(laptop);
           } else {
-            // If laptop is assigned but returned
-            if (laptop.returned) {
-              if (laptop.issues && laptop.issues.trim() !== '') {
-                status.damaged.push(laptop);
-              } else {
-                status.assigned.push(laptop); // Keep as assigned even if returned
-              }
-            } else {
-              status.assigned.push(laptop);
-            }
+            // If laptop is assigned and not damaged, it's assigned
+            status.assigned.push(laptop);
           }
         });
 

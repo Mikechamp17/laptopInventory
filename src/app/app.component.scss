@@ -1,12 +1,56 @@
-.toolbar-title {
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  font-weight: 500;
+/* CSS Variables for Sophisticated Theme */
+:host {
+  --primary-neutral: #1a1a1a;
+  --secondary-neutral: #f8f9fa;
+  --tertiary-neutral: #6c757d;
+  --accent-color: #4a90e2;
+  --accent-hover: #357abd;
+  --border-color: #e9ecef;
+  --shadow-subtle: rgba(0, 0, 0, 0.02);
+  --shadow-medium: rgba(0, 0, 0, 0.04);
+  --white: #ffffff;
+}
+
+/* Sophisticated Header Styling */
+.sophisticated-header {
+  background: var(--secondary-neutral) !important;
+  color: var(--primary-neutral) !important;
+  box-shadow: 0 2px 8px var(--shadow-medium);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 20px;
+  height: 100px;
+  
+  .toolbar-title {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-neutral);
+    letter-spacing: -0.01em;
+    
+    .header-logo {
+      width: 80px;
+      height: 80px;
+      margin-right: 16px;
+      object-fit: contain;
+    }
+  }
 }
 
 .toolbar-spacer {
   flex: 1 1 auto;
+}
+
+.logout-button {
+  color: var(--primary-neutral) !important;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  mat-icon {
+    color: var(--primary-neutral) !important;
+  }
 }
 
 .app-content {
@@ -20,11 +64,22 @@
 }
 
 @media (max-width: 768px) {
-  .app-content {
-    padding: 16px;
+  .sophisticated-header {
+    padding: 0 16px;
+    height: 85px;
+    
+    .toolbar-title {
+      font-size: 20px;
+      
+      .header-logo {
+        width: 65px;
+        height: 65px;
+        margin-right: 14px;
+      }
+    }
   }
   
-  .toolbar-title {
-    font-size: 16px;
+  .app-content {
+    padding: 16px;
   }
 }

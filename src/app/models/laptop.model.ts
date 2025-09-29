@@ -11,6 +11,7 @@ export interface Laptop {
   assigned_to?: string;
   assigned_date?: string;
   returned: boolean;
+  damaged: boolean;
   issues: string;
   notes: string;
   assignment_history: AssignmentHistory[];

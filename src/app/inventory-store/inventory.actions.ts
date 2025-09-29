@@ -20,3 +20,17 @@ export const addLaptop = createAction("[Inventory] Add Laptop", props<{ laptop: 
 export const addLaptopSuccess = createAction("[Inventory] Add Laptop Success", props<{ laptop: Laptop }>());
 
 export const addLaptopFailure = createAction("[Inventory] Add Laptop Failure", props<{ error: HttpErrorResponse }>());
+
+// Update Laptop actions
+export const updateLaptop = createAction("[Inventory] Update Laptop", props<{ id: string, laptop: Partial<Laptop> }>());
+
+export const updateLaptopSuccess = createAction("[Inventory] Update Laptop Success", props<{ laptop: Laptop }>());
+
+export const updateLaptopFailure = createAction("[Inventory] Update Laptop Failure", props<{ error: HttpErrorResponse }>());
+
+// Delete Laptop actions
+export const deleteLaptop = createAction("[Inventory] Delete Laptop", props<{ id: string }>());
+
+export const deleteLaptopSuccess = createAction("[Inventory] Delete Laptop Success", props<{ id: string }>());
+
+export const deleteLaptopFailure = createAction("[Inventory] Delete Laptop Failure", props<{ error: HttpErrorResponse }>());

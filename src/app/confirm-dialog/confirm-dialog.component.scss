@@ -1,3 +1,20 @@
+/* ========================================
+   SOPHISTICATED MINIMALISTIC CONFIRM DIALOG
+   ======================================== */
+
+// CSS Variables for Sophisticated Theme
+:host {
+  --primary-neutral: #1a1a1a;
+  --secondary-neutral: #f8f9fa;
+  --tertiary-neutral: #6c757d;
+  --accent-color: #4a90e2;
+  --accent-hover: #357abd;
+  --border-color: #e9ecef;
+  --shadow-subtle: rgba(0, 0, 0, 0.02);
+  --shadow-medium: rgba(0, 0, 0, 0.04);
+  --white: #ffffff;
+}
+
 .confirm-dialog {
   padding: 8px;
   animation: dialogSlideIn 0.3s ease-out;
@@ -26,27 +43,27 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    background: var(--tertiary-neutral);
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(238, 90, 82, 0.3);
+    box-shadow: 0 4px 12px var(--shadow-medium);
     animation: warningPulse 2s ease-in-out infinite;
     
     mat-icon {
       font-size: 24px;
       width: 24px;
       height: 24px;
-      color: white;
+      color: var(--white);
     }
   }
   
   @keyframes warningPulse {
     0%, 100% {
       transform: scale(1);
-      box-shadow: 0 4px 12px rgba(238, 90, 82, 0.3);
+      box-shadow: 0 4px 12px var(--shadow-medium);
     }
     50% {
       transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(238, 90, 82, 0.4);
+      box-shadow: 0 6px 16px var(--shadow-medium);
     }
   }
   
@@ -54,7 +71,7 @@
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--primary-neutral);
     flex: 1;
   }
 }
@@ -69,19 +86,17 @@ mat-dialog-content {
       margin: 0;
       font-size: 15px;
       line-height: 1.5;
-      color: #555;
+      color: var(--tertiary-neutral);
       
       // Ensure HTML content like strong tags are properly styled
       ::ng-deep {
         strong {
-          color: #2c3e50;
+          color: var(--primary-neutral);
           font-weight: 600;
-          background: linear-gradient(135deg, #667eea, #764ba2);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          padding: 2px 4px;
+          background: var(--secondary-neutral);
+          padding: 2px 6px;
           border-radius: 4px;
+          border: 1px solid var(--border-color);
         }
       }
     }
@@ -95,19 +110,19 @@ mat-dialog-actions {
   
   .cancel-btn {
     padding: 8px 20px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    background: white;
-    color: #666;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--white);
+    color: var(--tertiary-neutral);
     font-weight: 500;
     transition: all 0.2s ease;
     
     &:hover {
-      background: #f5f5f5;
-      border-color: #2196f3;
-      color: #1976d2;
+      background: var(--secondary-neutral);
+      border-color: var(--tertiary-neutral);
+      color: var(--primary-neutral);
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+      box-shadow: 0 2px 8px var(--shadow-subtle);
     }
     
     mat-icon {
@@ -120,14 +135,18 @@ mat-dialog-actions {
   
   .confirm-btn {
     padding: 8px 20px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 600;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+    background: var(--tertiary-neutral);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 2px 8px var(--shadow-medium);
     
     &:hover {
+      background: var(--primary-neutral);
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+      box-shadow: 0 4px 12px var(--shadow-medium);
     }
     
     mat-icon {

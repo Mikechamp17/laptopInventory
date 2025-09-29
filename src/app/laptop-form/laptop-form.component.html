@@ -1,17 +1,15 @@
 <div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon class="mr-16">{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
-        {{ isEditMode ? 'Edit' : 'Add' }} Laptop
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{ isEditMode ? 'Update laptop information' : 'Add a new laptop to inventory' }}
-      </mat-card-subtitle>
-    </mat-card-header>
-    
-    <mat-card-content>
-      <form [formGroup]="laptopForm" (ngSubmit)="onSubmit()" class="laptop-form">
+  <div class="form-header">
+    <h1 class="form-title">
+      <mat-icon class="mr-16">{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Edit' : 'Add' }} Laptop
+    </h1>
+    <p class="form-subtitle">
+      {{ isEditMode ? 'Update laptop information' : 'Add a new laptop to inventory' }}
+    </p>
+  </div>
+  
+  <form [formGroup]="laptopForm" (ngSubmit)="onSubmit()" class="laptop-form">
         <div class="form-row">
           <mat-form-field class="form-field">
             <mat-label>Asset Tag *</mat-label>
@@ -48,25 +46,17 @@
             <mat-hint>Leave blank if the laptop is available and not assigned to anyone</mat-hint>
           </mat-form-field>
           
-          <mat-form-field class="form-field" *ngIf="isLaptopAssigned()">
+          <mat-form-field *ngIf="isLaptopAssigned()">
             <mat-label>Assigned Date *</mat-label>
             <input matInput 
                    [matDatepicker]="assignedDatePicker" 
                    formControlName="assigned_date"
-                   placeholder="Choose a date"
-                   readonly
-                   [max]="maxDate">
+                   placeholder="Choose a date">
             <mat-datepicker-toggle matSuffix [for]="assignedDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #assignedDatePicker 
-                           [startAt]="startDate"
-                           [touchUi]="false">
-            </mat-datepicker>
-            <mat-hint>Click the calendar icon to select a date</mat-hint>
+            <mat-datepicker #assignedDatePicker [touchUi]="false" (closed)="onDatePickerClosed()"></mat-datepicker>
+            <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('required')">
               Assigned date is required when assigning to someone
-            </mat-error>
-            <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('matDatepickerMax')">
-              Date cannot be in the future
             </mat-error>
           </mat-form-field>
         </div>
@@ -103,18 +93,16 @@
             <textarea matInput 
                       formControlName="issues" 
                       placeholder="Describe any issues with the laptop"
-                      rows="3"></textarea>
+                      rows="2"></textarea>
             <mat-hint>Leave blank if no issues</mat-hint>
           </mat-form-field>
-        </div>
-
-        <div class="form-row">
+          
           <mat-form-field class="form-field">
             <mat-label>Notes</mat-label>
             <textarea matInput 
                       formControlName="notes" 
                       placeholder="Additional notes or comments"
-                      rows="3"></textarea>
+                      rows="2"></textarea>
             <mat-hint>Optional notes for tracking</mat-hint>
           </mat-form-field>
         </div>
@@ -122,6 +110,12 @@
         <div class="form-row">
           <mat-checkbox formControlName="returned" class="form-field">
             Laptop has been returned
+          </mat-checkbox>
+        </div>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="damaged" class="form-field">
+            Laptop is damaged
           </mat-checkbox>
         </div>
 
@@ -144,6 +138,4 @@
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepicker } from '@angular/material/datepicker';
 import { Subject, takeUntil, filter } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
@@ -48,9 +49,7 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
   laptopId: string | null = null;
   loading = false;
   
-  // Date picker configuration
-  maxDate = new Date();
-  startDate = new Date();
+  @ViewChild('assignedDatePicker') assignedDatePicker!: MatDatepicker<Date>;
   
   private destroy$ = new Subject<void>();
 
@@ -96,6 +95,20 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
       this.snackBar.open('Laptop added successfully', 'Close', { duration: 3000 });
       this.router.navigate(['/inventory']);
     });
+
+    // Add click listener to the X button after view init
+    setTimeout(() => {
+      this.addCloseButtonListener();
+    }, 100);
+
+    // Listen for update laptop success action
+    this.actions$.pipe(
+      ofType(InvetoryActions.updateLaptopSuccess),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.snackBar.open('Laptop updated successfully', 'Close', { duration: 3000 });
+      this.router.navigate(['/inventory']);
+    });
   }
 
   ngOnDestroy(): void {
@@ -108,8 +121,9 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
       asset_tag: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]],
       make: ['', Validators.required],
       assigned_to: [''],
-      assigned_date: [''],
+      assigned_date: [null],
       returned: [false],
+      damaged: [false],
       issues: [''],
       notes: [''],
       jumpcloud_installed: [false],
@@ -132,6 +146,7 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
               assigned_to: laptop.assigned_to,
               assigned_date: laptop.assigned_date,
               returned: laptop.returned,
+              damaged: laptop.damaged || false,
               issues: laptop.issues || '',
               notes: laptop.notes || '',
               jumpcloud_installed: laptop.jumpcloud_installed || false,
@@ -189,19 +204,11 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
               
               console.log('Updated Laptop Data:', updatedLaptopData);
               
-              this.laptopService.updateLaptop(this.laptopId!, updatedLaptopData)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe({
-                  next: () => {
-                    this.snackBar.open('Laptop updated successfully', 'Close', { duration: 3000 });
-                    this.router.navigate(['/inventory']);
-                  },
-                  error: (error) => {
-                    console.error('Error updating laptop:', error);
-                    this.snackBar.open('Error updating laptop', 'Close', { duration: 3000 });
-                    this.loading = false;
-                  }
-                });
+              // Use NgRx action for updating laptops
+              this.store.dispatch(InvetoryActions.updateLaptop({ 
+                id: this.laptopId!, 
+                laptop: updatedLaptopData 
+              }));
             }
           },
           error: (error) => {
@@ -234,24 +241,33 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
   // Update assignment history when laptop assignment changes
   private updateAssignmentHistory(currentLaptop: Laptop, formValue: any): any[] {
     const currentHistory = currentLaptop.assignment_history || [];
+    console.log('=== ASSIGNMENT HISTORY UPDATE DEBUG ===');
+    console.log('Current Laptop:', currentLaptop);
+    console.log('Form Value:', formValue);
+    console.log('Is Laptop Assigned:', this.isLaptopAssigned());
+    console.log('Current History:', currentHistory);
+    
+    // If laptop is being returned (checkbox checked OR assigned_to is cleared)
+    if ((formValue.returned || (!this.isLaptopAssigned() && currentLaptop.assigned_to)) && currentLaptop.assigned_to) {
+      console.log('DETECTED: Laptop being returned');
+      const updatedHistory = [...currentHistory];
+      const lastEntry = updatedHistory[updatedHistory.length - 1];
+      if (lastEntry && !lastEntry.to_date) {
+        lastEntry.to_date = new Date().toISOString().split('T')[0];
+        console.log('Added end date to last entry:', lastEntry);
+      }
+      console.log('Updated History (returned):', updatedHistory);
+      return updatedHistory;
+    }
     
     // If laptop is being assigned and wasn't assigned before
     if (this.isLaptopAssigned() && formValue.assigned_to && !currentLaptop.assigned_to) {
+      console.log('DETECTED: New assignment');
       return [...currentHistory, {
         assigned_to: formValue.assigned_to,
         from_date: this.formatDateForFirebase(formValue.assigned_date),
         to_date: ''
       }];
-    }
-    
-    // If laptop is being returned
-    if (formValue.returned && currentLaptop.assigned_to) {
-      const updatedHistory = [...currentHistory];
-      const lastEntry = updatedHistory[updatedHistory.length - 1];
-      if (lastEntry && !lastEntry.to_date) {
-        lastEntry.to_date = new Date().toISOString().split('T')[0];
-      }
-      return updatedHistory;
     }
     
     // If assignment is being changed (reassigned to someone else)
@@ -309,6 +325,8 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     }
   }
 
+
+
   // Check if form is valid considering assignment logic
   isFormValid(): boolean {
     if (this.laptopForm.get('asset_tag')?.invalid || 
@@ -324,4 +342,48 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     
     return true;
   }
+
+  // Handle date picker close event
+  onDatePickerClosed(): void {
+    // This method is called when the date picker is closed
+    // The X button will trigger this event
+  }
+
+
+  private addCloseButtonListener(): void {
+    // Use a more reliable approach with MutationObserver
+    const observer = new MutationObserver(() => {
+      const datepickerContent = document.querySelector('.mat-datepicker-content');
+      if (datepickerContent && !datepickerContent.hasAttribute('data-listener-added')) {
+        datepickerContent.setAttribute('data-listener-added', 'true');
+        
+        // Add click listener to the entire content area
+        datepickerContent.addEventListener('click', (event) => {
+          const rect = datepickerContent.getBoundingClientRect();
+          const clickX = (event as MouseEvent).clientX;
+          const clickY = (event as MouseEvent).clientY;
+          
+          // X button is positioned at top: 8px, right: 8px with 20px size
+          const xButtonLeft = rect.right - 28; // 8px margin + 20px size
+          const xButtonRight = rect.right - 8;
+          const xButtonTop = rect.top + 8;
+          const xButtonBottom = rect.top + 28;
+          
+          if (clickX >= xButtonLeft && clickX <= xButtonRight && 
+              clickY >= xButtonTop && clickY <= xButtonBottom) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.assignedDatePicker.close();
+          }
+        });
+      }
+    });
+    
+    // Start observing
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
 }

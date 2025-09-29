@@ -19,7 +19,7 @@ import { Laptop, LaptopStatus } from '../models/laptop.model';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Store } from '@ngrx/store';
 import { InvetoryState } from '../inventory-store/inventory.reducer';
-import { Actions } from '@ngrx/effects';
+import { Actions, ofType } from '@ngrx/effects';
 
 import * as InvetoryActions from '../inventory-store/inventory.actions';
 import { selectInventory, selectInvenotryLoading, selectInventoryError } from '../inventory-store/inventory.selectors';
@@ -62,6 +62,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private store: Store<InvetoryState>,
+    private actions$: Actions
   ) {
     // Debounce search input
     this.searchSubject.pipe(
@@ -98,6 +99,22 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       this.loading = loading;
     });
 
+    // Listen for delete laptop success action
+    this.actions$.pipe(
+      ofType(InvetoryActions.deleteLaptopSuccess),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.snackBar.open('Laptop deleted successfully', 'Close', { duration: 3000 });
+    });
+
+    // Listen for delete laptop failure action
+    this.actions$.pipe(
+      ofType(InvetoryActions.deleteLaptopFailure),
+      takeUntil(this.destroy$)
+    ).subscribe((action) => {
+      this.snackBar.open('Error deleting laptop: ' + action.error, 'Close', { duration: 3000 });
+    });
+
     this.store.select(selectInventoryError).subscribe(error => {
       if (error) {
         this.snackBar.open(`Error: ${error}`, 'Close', { duration: 5000 });
@@ -129,6 +146,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       assigned_to: 'Test User',
       assigned_date: '2025-01-15',
       returned: false,
+      damaged: false,
       issues: '',
       notes: 'Test laptop added via NgRx',
       assignment_history: [{
@@ -258,34 +276,38 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   }
 
   getStatusText(laptop: Laptop): string {
+    // If laptop is marked as damaged, it's damaged regardless of assignment
+    if (laptop.damaged) {
+      return 'Damaged';
+    }
+    
     // If laptop has no assignment, it's available
     if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
-      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
-        return 'Damaged';
-      }
       return 'Available';
     }
     
     // If laptop is assigned but returned
     if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'Damaged' : 'Returned';
+      return 'Returned';
     }
     
     return 'Assigned';
   }
 
   getStatusClass(laptop: Laptop): string {
+    // If laptop is marked as damaged, it's damaged regardless of assignment
+    if (laptop.damaged) {
+      return 'damaged';
+    }
+    
     // If laptop has no assignment, it's available
     if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
-      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
-        return 'damaged';
-      }
       return 'available';
     }
     
     // If laptop is assigned but returned
     if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'returned';
+      return 'returned';
     }
     
     return 'assigned';
@@ -293,17 +315,19 @@ export class InventoryListComponent implements OnInit, OnDestroy {
 
   // Get status key for filtering (consistent with chip values)
   getStatusKey(laptop: Laptop): string {
+    // If laptop is marked as damaged, it's damaged regardless of assignment
+    if (laptop.damaged) {
+      return 'damaged';
+    }
+    
     // If laptop has no assignment, it's available
     if (!laptop.assigned_to || laptop.assigned_to.trim() === '') {
-      if (laptop.returned && laptop.issues && laptop.issues.trim()) {
-        return 'damaged';
-      }
       return 'available';
     }
     
     // If laptop is assigned but returned
     if (laptop.returned) {
-      return laptop.issues && laptop.issues.trim() ? 'damaged' : 'returned';
+      return 'returned';
     }
     
     return 'assigned';
@@ -316,7 +340,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       const statusText = this.getStatusText(laptop);
       const statusClass = this.getStatusClass(laptop);
       const statusKey = this.getStatusKey(laptop);
-      console.log(`${laptop.asset_tag}: returned=${laptop.returned}, issues="${laptop.issues}", statusText="${statusText}", statusClass="${statusClass}", statusKey="${statusKey}"`);
+      console.log(`${laptop.asset_tag}: returned=${laptop.returned}, damaged=${laptop.damaged}, issues="${laptop.issues}", statusText="${statusText}", statusClass="${statusClass}", statusKey="${statusKey}"`);
     });
     console.log('=== End Debug ===');
   }
@@ -364,19 +388,8 @@ export class InventoryListComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && laptop.id) {
-        this.laptopService.deleteLaptop(laptop.id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.snackBar.open('Laptop deleted successfully', 'Close', { duration: 3000 });
-              // Refresh the inventory by dispatching the get action
-              this.store.dispatch(InvetoryActions.getInvenotry());
-            },
-            error: (error) => {
-              console.error('Error deleting laptop:', error);
-              this.snackBar.open('Error deleting laptop', 'Close', { duration: 3000 });
-            }
-          });
+        // Use NgRx action for deleting laptops
+        this.store.dispatch(InvetoryActions.deleteLaptop({ id: laptop.id }));
       }
     });
   }

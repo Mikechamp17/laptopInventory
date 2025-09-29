@@ -1,8 +1,8 @@
 <div class="inventory-container">
-  <!-- Simple Search Header -->
+  <!-- Clean Search Header -->
   <div class="search-header">
     <div class="search-container">
-      <mat-form-field class="search-field" appearance="outline">
+      <mat-form-field class="search-field" appearance="fill">
         <mat-label>Search laptops</mat-label>
         <input matInput 
                [(ngModel)]="searchTerm" 
@@ -16,7 +16,6 @@
   <!-- Quick Actions Bar -->
   <div class="quick-actions">
     <button mat-raised-button 
-            color="primary" 
             routerLink="/add" 
             class="add-laptop-btn">
       <mat-icon>add</mat-icon>
@@ -24,47 +23,43 @@
     </button>
   </div>
   
-  <mat-card>
-    
-    <mat-card-content>
-      <!-- Search and Filter Section -->
-      <div class="search-filter-section">
-        <div class="filter-chips">
-          <button mat-stroked-button 
-                  [class.active]="selectedStatus === 'all'"
-                  (click)="selectStatus('all')"
-                  class="filter-button">
-            All
-          </button>
-          <button mat-stroked-button 
-                  [class.active]="selectedStatus === 'available'"
-                  (click)="selectStatus('available')"
-                  class="filter-button">
-            Available
-          </button>
-          <button mat-stroked-button 
-                  [class.active]="selectedStatus === 'assigned'"
-                  (click)="selectStatus('assigned')"
-                  class="filter-button">
-            Assigned
-          </button>
-          <button mat-stroked-button 
-                  [class.active]="selectedStatus === 'damaged'"
-                  (click)="selectStatus('damaged')"
-                  class="filter-button">
-            Damaged
-          </button>
-          
-          <button mat-raised-button 
-                  (click)="exportToCSV()" 
-                  [disabled]="filteredLaptops.length === 0"
-                  matTooltip="Export to CSV"
-                  class="export-button">
-            <mat-icon>download</mat-icon>
-            Export CSV
-          </button>
-        </div>
-      </div>
+  <!-- Search and Filter Section -->
+  <div class="search-filter-section">
+    <div class="filter-chips">
+      <button mat-stroked-button 
+              [class.active]="selectedStatus === 'all'"
+              (click)="selectStatus('all')"
+              class="filter-button">
+        All
+      </button>
+      <button mat-stroked-button 
+              [class.active]="selectedStatus === 'available'"
+              (click)="selectStatus('available')"
+              class="filter-button">
+        Available
+      </button>
+      <button mat-stroked-button 
+              [class.active]="selectedStatus === 'assigned'"
+              (click)="selectStatus('assigned')"
+              class="filter-button">
+        Assigned
+      </button>
+      <button mat-stroked-button 
+              [class.active]="selectedStatus === 'damaged'"
+              (click)="selectStatus('damaged')"
+              class="filter-button">
+        Damaged
+      </button>
+      
+      <button mat-raised-button 
+              (click)="exportToCSV()" 
+              [disabled]="filteredLaptops.length === 0"
+              matTooltip="Export to CSV"
+              class="export-button">
+        Export CSV
+      </button>
+    </div>
+  </div>
 
       <!-- Status Summary -->
       <div class="status-summary">
@@ -175,18 +170,24 @@
             <td mat-cell *matCellDef="let laptop">
               <div class="software-status">
                 <div class="software-item" [class.installed]="laptop.jumpcloud_installed">
-                  <mat-icon class="software-icon">cloud</mat-icon>
+                  <svg class="software-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                  </svg>
                   <span class="software-name">JumpCloud</span>
-                  <mat-icon class="status-icon" [class.installed]="laptop.jumpcloud_installed">
-                    {{ laptop.jumpcloud_installed ? 'check_circle' : 'cancel' }}
-                  </mat-icon>
+                  <svg class="status-icon" [class.installed]="laptop.jumpcloud_installed" viewBox="0 0 24 24" width="20" height="20">
+                    <path *ngIf="laptop.jumpcloud_installed" fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <path *ngIf="!laptop.jumpcloud_installed" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                  </svg>
                 </div>
                 <div class="software-item" [class.installed]="laptop.webroot_installed">
-                  <mat-icon class="software-icon">security</mat-icon>
+                  <svg class="software-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V16H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                  </svg>
                   <span class="software-name">Webroot</span>
-                  <mat-icon class="status-icon" [class.installed]="laptop.webroot_installed">
-                    {{ laptop.webroot_installed ? 'check_circle' : 'cancel' }}
-                  </mat-icon>
+                  <svg class="status-icon" [class.installed]="laptop.webroot_installed" viewBox="0 0 24 24" width="20" height="20">
+                    <path *ngIf="laptop.webroot_installed" fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <path *ngIf="!laptop.webroot_installed" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                  </svg>
                 </div>
               </div>
             </td>
@@ -200,13 +201,17 @@
                 <div class="history-item" *ngFor="let entry of laptop.assignment_history; let i = index" 
                      [class.current-assignment]="!entry.to_date">
                   <div class="history-header">
-                    <mat-icon class="person-icon">person</mat-icon>
+                    <svg class="person-icon" viewBox="0 0 24 24" width="16" height="16">
+                      <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
                     <span class="history-person">{{ entry.assigned_to }}</span>
                     <span class="current-badge" *ngIf="!entry.to_date">Current</span>
                   </div>
                   <div class="history-dates">
                     <div class="date-range">
-                      <mat-icon class="date-icon">schedule</mat-icon>
+                      <svg class="date-icon" viewBox="0 0 24 24" width="14" height="14">
+                        <path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                      </svg>
                       <span class="from-date">{{ entry.from_date | date:'MMM d, y' }}</span>
                       <span class="date-separator" *ngIf="entry.to_date">to</span>
                       <span class="to-date" *ngIf="entry.to_date">{{ entry.to_date | date:'MMM d, y' }}</span>
@@ -216,7 +221,9 @@
               </div>
               <ng-template #noHistory>
                 <div class="no-history">
-                  <mat-icon class="no-history-icon">history</mat-icon>
+                  <svg class="no-history-icon" viewBox="0 0 24 24" width="18" height="18">
+                    <path fill="currentColor" d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+                  </svg>
                   <span>No assignment history</span>
                 </div>
               </ng-template>
@@ -272,22 +279,22 @@
 
       <!-- Empty State -->
       <div *ngIf="!loading && filteredLaptops.length === 0" class="empty-state">
-        <mat-icon class="empty-icon">laptop</mat-icon>
+        <div class="empty-icon-container">
+          <mat-icon class="empty-icon">laptop</mat-icon>
+        </div>
         <h3>No laptops found</h3>
-        <p *ngIf="searchTerm || selectedStatus !== 'all'">
+        <p *ngIf="searchTerm || selectedStatus !== 'all'" class="empty-message">
           Try adjusting your search or filter criteria
         </p>
-        <p *ngIf="!searchTerm && selectedStatus === 'all'">
+        <p *ngIf="!searchTerm && selectedStatus === 'all'" class="empty-message">
           No laptops have been added to the inventory yet
         </p>
         <button mat-raised-button 
                 color="primary" 
                 routerLink="/add"
-                class="mt-16">
+                class="empty-action-btn">
           <mat-icon>add</mat-icon>
-          Add First Laptop
+          Add Laptop
         </button>
       </div>
-    </mat-card-content>
-  </mat-card>
 </div>

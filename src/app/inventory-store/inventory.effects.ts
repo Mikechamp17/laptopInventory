@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { EMPTY, of } from "rxjs";
-import { map, exhaustMap, catchError, tap } from "rxjs/operators";
+import { map, exhaustMap, catchError, tap, switchMap } from "rxjs/operators";
 import { LaptopService } from "../services/laptop.service";
 import * as InvetoryActions from "./inventory.actions";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -78,6 +78,80 @@ export class InvenotryEffects {
             console.log('Dispatching addLaptopFailure action');
             console.groupEnd();
             return of(InvetoryActions.addLaptopFailure({ error: error.message || 'Unknown error' }));
+          })
+        )
+      )
+    );
+  });
+
+  updateLaptop$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(InvetoryActions.updateLaptop),
+      tap(action => {
+        console.group('🎯 Effect Triggered: updateLaptop');
+        console.log('Action dispatched:', action);
+        console.log('Laptop ID to update:', action.id);
+        console.log('Update data:', action.laptop);
+        console.log('Calling laptopService.updateLaptop()...');
+        console.groupEnd();
+      }),
+      exhaustMap((action) =>
+        this.laptopService.updateLaptop(action.id, action.laptop).pipe(
+          tap(() => {
+            console.group('✅ Service Response Received');
+            console.log('Laptop updated successfully');
+            console.groupEnd();
+          }),
+          switchMap(() => {
+            console.log('🎉 Getting updated laptop data');
+            return this.laptopService.getLaptopById(action.id).pipe(
+              map(laptop => {
+                if (!laptop) {
+                  throw new Error('Laptop not found after update');
+                }
+                return InvetoryActions.updateLaptopSuccess({ laptop });
+              })
+            );
+          }),
+          catchError((error) => {
+            console.group('❌ Error in Effect');
+            console.error('Service Error:', error);
+            console.log('Dispatching updateLaptopFailure action');
+            console.groupEnd();
+            return of(InvetoryActions.updateLaptopFailure({ error: error.message || 'Unknown error' }));
+          })
+        )
+      )
+    );
+  });
+
+  deleteLaptop$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(InvetoryActions.deleteLaptop),
+      tap(action => {
+        console.group('🎯 Effect Triggered: deleteLaptop');
+        console.log('Action dispatched:', action);
+        console.log('Laptop ID to delete:', action.id);
+        console.log('Calling laptopService.deleteLaptop()...');
+        console.groupEnd();
+      }),
+      exhaustMap((action) =>
+        this.laptopService.deleteLaptop(action.id).pipe(
+          tap(() => {
+            console.group('✅ Service Response Received');
+            console.log('Laptop deleted successfully');
+            console.groupEnd();
+          }),
+          map(() => {
+            console.log('🎉 Dispatching deleteLaptopSuccess action');
+            return InvetoryActions.deleteLaptopSuccess({ id: action.id });
+          }),
+          catchError((error) => {
+            console.group('❌ Error in Effect');
+            console.error('Service Error:', error);
+            console.log('Dispatching deleteLaptopFailure action');
+            console.groupEnd();
+            return of(InvetoryActions.deleteLaptopFailure({ error: error.message || 'Unknown error' }));
           })
         )
       )
