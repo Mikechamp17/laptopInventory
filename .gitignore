@@ -54,3 +54,8 @@ ui-debug.log
 # Environment files
 src/environments/environment.prod.ts
 src/environments/environment.ts
+node_modules/
+dist/
+.angular/
+.DS_Store
+*.log
