@@ -120,12 +120,14 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     return this.fb.group({
       asset_tag: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]],
       make: ['', Validators.required],
+      ram: [''],
       assigned_to: [''],
       assigned_date: [null],
       returned: [false],
       damaged: [false],
       issues: [''],
       notes: [''],
+      additional_equipment: [''],
       jumpcloud_installed: [false],
       webroot_installed: [false]
     });
@@ -143,12 +145,14 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
             this.laptopForm.patchValue({
               asset_tag: laptop.asset_tag,
               make: laptop.make,
+              ram: laptop.ram || '',
               assigned_to: laptop.assigned_to,
               assigned_date: laptop.assigned_date,
               returned: laptop.returned,
               damaged: laptop.damaged || false,
               issues: laptop.issues || '',
               notes: laptop.notes || '',
+              additional_equipment: laptop.additional_equipment || '',
               jumpcloud_installed: laptop.jumpcloud_installed || false,
               webroot_installed: laptop.webroot_installed || false
             });

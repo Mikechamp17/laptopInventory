@@ -94,34 +94,20 @@ input[matInput][readonly] {
 }
 
 
-// Fix datepicker positioning and styling
+// Datepicker styling - minimal to avoid conflicts
+
+// Datepicker container styling - center and size properly
 ::ng-deep .mat-datepicker-content {
-  position: fixed !important;
-  z-index: 1000 !important;
-  transform: none !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
   width: 320px !important;
-  max-width: 320px !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-  background: white !important;
-  border: 1px solid #e0e0e0 !important;
-  overflow: hidden !important;
-}
-
-::ng-deep .mat-datepicker-popup {
-  position: fixed !important;
-  z-index: 1000 !important;
-}
-
-// Add small X close button in top right corner
-::ng-deep .mat-datepicker-content {
+  max-width: 90vw !important;
+  margin: 0 auto !important;
   position: relative !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
 }
 
+// Datepicker close button styling
 ::ng-deep .mat-datepicker-content::after {
   content: "×" !important;
   position: absolute !important;
@@ -150,12 +136,32 @@ input[matInput][readonly] {
   color: #333 !important;
 }
 
-// Remove the default close button completely
-::ng-deep .mat-datepicker-actions {
-  display: none !important;
+// Datepicker actions - position real close button at top-right
+::ng-deep .mat-datepicker-content .datepicker-close-button {
+  width: 28px !important;
+  height: 28px !important;
+  position: absolute !important;
+  top: 4px !important;
+  right: 4px !important;
+  z-index: 2 !important;
 }
 
-// Fix calendar header - reduce padding and remove duplicate month display
+// Additional safety: hide any remaining action buttons
+::ng-deep .mat-datepicker-content .mat-datepicker-actions {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-datepicker-actions button {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+// Fix calendar header - clean up month display and remove duplicates
 ::ng-deep .mat-calendar-header {
   padding: 8px 16px 4px 16px !important;
   background: #f8f9fa !important;
@@ -175,18 +181,39 @@ input[matInput][readonly] {
   }
 }
 
-// Hide day headers completely
+// Remove duplicate month display - hide the dropdown arrow
+::ng-deep .mat-calendar-header .mat-calendar-period-button .mat-calendar-arrow {
+  display: none !important;
+}
+
+// Hide the redundant month display
+::ng-deep .mat-calendar-header .mat-calendar-period-button::before {
+  display: none !important;
+}
+
+// Remove the duplicate month text by hiding the period button text
+::ng-deep .mat-calendar-header .mat-calendar-period-button .mat-calendar-period-button-text {
+  display: none !important;
+}
+
+// Hide day headers completely as requested
 ::ng-deep .mat-calendar-table-header {
   display: none !important;
 }
 
-// Fix date numbers spacing and positioning - use more space
+// Hide any duplicate day headers that might be showing
+::ng-deep .mat-calendar-body-label {
+  display: none !important;
+}
+
+// Fix date numbers spacing and positioning
 ::ng-deep .mat-calendar-body {
-  padding: 4px 12px 8px 12px !important;
+  padding: 8px 12px 16px 12px !important;
+  min-height: 280px !important;
   
   .mat-calendar-body-cell {
     width: 14.28% !important;
-    height: 36px !important;
+    height: 40px !important;
     text-align: center !important;
     vertical-align: middle !important;
     padding: 0 !important;
@@ -195,15 +222,17 @@ input[matInput][readonly] {
   
   .mat-calendar-body-cell-content {
     border-radius: 50% !important;
-    width: 30px !important;
-    height: 30px !important;
-    line-height: 30px !important;
-    font-size: 13px !important;
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    font-size: 14px !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important;
     position: relative !important;
     text-align: center !important;
-    display: inline-block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     margin: 0 auto !important;
     vertical-align: middle !important;
 
@@ -226,19 +255,14 @@ input[matInput][readonly] {
   }
 }
 
-// Remove the large SEP overlay
-::ng-deep .mat-calendar-body-label {
-  display: none !important;
-}
-
-// Fix calendar table layout - use more space
+// Fix calendar table layout
 ::ng-deep .mat-calendar-table {
   width: 100% !important;
   table-layout: fixed !important;
   border-collapse: collapse !important;
   
   tr {
-    height: 36px !important;
+    height: 40px !important;
   }
   
   td {
@@ -250,6 +274,7 @@ input[matInput][readonly] {
     border: none !important;
   }
 }
+
 
 // Status indicator styles
 .status-indicator {

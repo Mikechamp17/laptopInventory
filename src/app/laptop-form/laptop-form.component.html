@@ -34,6 +34,14 @@
               Make is required
             </mat-error>
           </mat-form-field>
+          
+          <mat-form-field class="form-field">
+            <mat-label>RAM</mat-label>
+            <input matInput 
+                   formControlName="ram" 
+                   placeholder="e.g., 8GB, 16GB, 32GB">
+            <mat-hint>Specify the amount of RAM installed</mat-hint>
+          </mat-form-field>
         </div>
 
         <div class="form-row">
@@ -53,7 +61,11 @@
                    formControlName="assigned_date"
                    placeholder="Choose a date">
             <mat-datepicker-toggle matSuffix [for]="assignedDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #assignedDatePicker [touchUi]="false" (closed)="onDatePickerClosed()"></mat-datepicker>
+            <mat-datepicker #assignedDatePicker [touchUi]="false" (closed)="onDatePickerClosed()">
+              <button mat-icon-button aria-label="Close calendar" class="datepicker-close-button" (click)="assignedDatePicker.close()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-datepicker>
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-error *ngIf="laptopForm.get('assigned_date')?.hasError('required')">
               Assigned date is required when assigning to someone
@@ -104,6 +116,13 @@
                       placeholder="Additional notes or comments"
                       rows="2"></textarea>
             <mat-hint>Optional notes for tracking</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field class="form-field">
+            <mat-label>Additional equipment given</mat-label>
+            <textarea matInput rows="3" formControlName="additional_equipment" placeholder="e.g., Mouse, Keyboard, Docking station, USB-C hub"></textarea>
           </mat-form-field>
         </div>
 

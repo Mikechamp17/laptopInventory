@@ -52,7 +52,7 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedStatus = 'all';
   
-  displayedColumns = ['asset_tag', 'make', 'assigned_to', 'assigned_date', 'software_status', 'assignment_history', 'status', 'issues', 'actions'];
+  displayedColumns = ['asset_tag', 'make', 'ram', 'assigned_to', 'assigned_date', 'software_status', 'assignment_history', 'status', 'issues', 'actions'];
   
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
@@ -372,19 +372,18 @@ export class InventoryListComponent implements OnInit, OnDestroy {
   }
 
   deleteLaptop(laptop: Laptop): void {
-          const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-        width: '450px',
-        maxWidth: '90vw',
-        panelClass: 'delete-dialog-panel',
-        disableClose: true,
-        data: {
-          title: 'Delete Laptop',
-          message: `Are you sure you want to delete laptop <strong>${laptop.asset_tag}</strong>? This action cannot be undone.`,
-          confirmText: 'Delete Laptop',
-          cancelText: 'Cancel',
-          confirmColor: 'warn'
-        }
-      });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '450px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: {
+        title: 'Delete Laptop',
+        message: `Are you sure you want to delete laptop <strong>${laptop.asset_tag}</strong>? This action cannot be undone.`,
+        confirmText: 'Delete Laptop',
+        cancelText: 'Cancel',
+        confirmColor: 'warn'
+      }
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && laptop.id) {
@@ -400,15 +399,17 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const headers = ['Asset Tag', 'Make', 'Assigned To', 'Assigned Date', 'Status', 'Issues', 'Notes'];
+    const headers = ['Asset Tag', 'Make', 'RAM', 'Assigned To', 'Assigned Date', 'Status', 'Issues', 'Notes', 'Additional Equipment'];
     const csvData = this.filteredLaptops.map(laptop => [
       laptop.asset_tag,
       laptop.make,
+      laptop.ram || '',
       laptop.assigned_to,
       laptop.assigned_date,
       this.getStatusText(laptop),
       laptop.issues || '',
-      laptop.notes || ''
+      laptop.notes || '',
+      laptop.additional_equipment || ''
     ]);
 
     const csvContent = [headers, ...csvData]

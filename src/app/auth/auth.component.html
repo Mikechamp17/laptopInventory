@@ -89,9 +89,13 @@
               color="primary"
               [disabled]="loading || !loginForm.valid"
               class="submit-button">
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-        <mat-icon *ngIf="!loading">login</mat-icon>
-        {{ loading ? loadingMessage : 'Sign In' }}
+        <ng-container *ngIf="loading; else loginContent">
+          <mat-spinner diameter="20"></mat-spinner>
+        </ng-container>
+        <ng-template #loginContent>
+          <mat-icon>login</mat-icon>
+          Sign In
+        </ng-template>
       </button>
     </form>
 
@@ -148,9 +152,13 @@
               color="primary"
               [disabled]="loading || !signupForm.valid"
               class="submit-button">
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-        <mat-icon *ngIf="!loading">person_add</mat-icon>
-        {{ loading ? loadingMessage : 'Create Account' }}
+        <ng-container *ngIf="loading; else signupContent">
+          <mat-spinner diameter="20"></mat-spinner>
+        </ng-container>
+        <ng-template #signupContent>
+          <mat-icon>person_add</mat-icon>
+          Create Account
+        </ng-template>
       </button>
     </form>
 

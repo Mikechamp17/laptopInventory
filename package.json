@@ -1,11 +1,20 @@
 {
   "name": "laptop-inventory-tracker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Internal laptop inventory tracking application",
+  "main": "electron.js",
+  "author": "WhiteHat Gaming",
+  "homepage": "./",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
+    "electron": "electron .",
+    "electron:build": "npm run build:prod && electron .",
+    "electron:package:mac": "npm run build:prod && electron-builder --mac",
+    "electron:package:win": "npm run build:prod && electron-builder --win",
+    "electron:package:all": "npm run build:prod && electron-builder --mac --win",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -34,12 +43,66 @@
     "@angular/compiler-cli": "^17.0.0",
     "@ngrx/store-devtools": "^17.0.0",
     "@types/jasmine": "~5.1.0",
+    "concurrently": "^9.2.1",
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.2.0",
+    "wait-on": "^9.0.1"
+  },
+
+
+  
+  "build": {
+    "appId": "com.whitehatgaming.laptopinventory",
+    "productName": "Laptop Inventory Tracker",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.business",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Laptop Inventory Tracker"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Office"
+    }
   }
 }

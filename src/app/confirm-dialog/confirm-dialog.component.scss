@@ -2,6 +2,53 @@
    SOPHISTICATED MINIMALISTIC CONFIRM DIALOG
    ======================================== */
 
+// Dialog button styling - make buttons bigger to accommodate icons
+.mat-mdc-dialog-actions {
+  padding: 16px 24px !important;
+  gap: 12px !important;
+  
+  button {
+    min-height: 44px !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    
+    mat-icon {
+      font-size: 18px !important;
+      width: 18px !important;
+      height: 18px !important;
+      margin-right: 8px !important;
+    }
+  }
+}
+
+// Dialog title styling - make title area bigger for icon
+.mat-mdc-dialog-title {
+  display: flex !important;
+  align-items: center !important;
+  padding: 20px 24px 8px 24px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  
+  mat-icon {
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-right: 12px !important;
+    color: #f44336 !important;
+  }
+}
+
+// Dialog content styling
+.mat-mdc-dialog-content {
+  padding: 8px 24px 16px 24px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
 // CSS Variables for Sophisticated Theme
 :host {
   --primary-neutral: #1a1a1a;

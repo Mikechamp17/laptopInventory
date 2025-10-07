@@ -8,12 +8,14 @@ export interface Laptop {
   id?: string;
   asset_tag: string;
   make: string;
+  ram?: string;
   assigned_to?: string;
   assigned_date?: string;
   returned: boolean;
   damaged: boolean;
   issues: string;
   notes: string;
+  additional_equipment?: string;
   assignment_history: AssignmentHistory[];
   jumpcloud_installed: boolean;
   webroot_installed: boolean;

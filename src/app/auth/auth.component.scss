@@ -192,16 +192,13 @@
       cursor: not-allowed;
     }
     
-    mat-icon {
-      margin-right: 8px;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-    
-    mat-spinner {
-      margin-right: 8px;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    mat-spinner { margin: 0; }
   }
 }
 

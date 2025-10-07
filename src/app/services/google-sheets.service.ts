@@ -49,16 +49,18 @@ export class GoogleSheetsService {
 
   // Export laptops to Google Sheets
   exportLaptopsToSheet(laptops: Laptop[], config: GoogleSheetsConfig): Observable<any> {
-    const headers = ['Asset Tag', 'Make', 'Assigned To', 'Assigned Date', 'Returned', 'Damaged', 'Issues', 'Notes'];
+    const headers = ['Asset Tag', 'Make', 'RAM', 'Assigned To', 'Assigned Date', 'Returned', 'Damaged', 'Issues', 'Notes', 'Additional Equipment'];
     const data = laptops.map(laptop => [
       laptop.asset_tag,
       laptop.make,
+      laptop.ram || '',
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
       laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
-      laptop.notes || ''
+      laptop.notes || '',
+      laptop.additional_equipment || ''
     ]);
     
     const values = [headers, ...data];
@@ -81,12 +83,14 @@ export class GoogleSheetsService {
     const row = [
       laptop.asset_tag,
       laptop.make,
+      laptop.ram || '',
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
       laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
-      laptop.notes || ''
+      laptop.notes || '',
+      laptop.additional_equipment || ''
     ];
     
     const url = `${this.GOOGLE_SHEETS_API}/${config.spreadsheetId}/values/${config.range}:append?valueInputOption=RAW&key=${config.apiKey}`;
@@ -108,15 +112,17 @@ export class GoogleSheetsService {
     const row = [
       laptop.asset_tag,
       laptop.make,
+      laptop.ram || '',
       laptop.assigned_to,
       laptop.assigned_date,
       laptop.returned ? 'Yes' : 'No',
       laptop.damaged ? 'Yes' : 'No',
       laptop.issues || '',
-      laptop.notes || ''
+      laptop.notes || '',
+      laptop.additional_equipment || ''
     ];
     
-    const range = `${config.range.split('!')[0]}!A${rowIndex + 2}:H${rowIndex + 2}`;
+    const range = `${config.range.split('!')[0]}!A${rowIndex + 2}:J${rowIndex + 2}`;
     const url = `${this.GOOGLE_SHEETS_API}/${config.spreadsheetId}/values/${range}?valueInputOption=RAW&key=${config.apiKey}`;
     
     return this.http.put(url, { values: [row] }, {
@@ -156,12 +162,14 @@ export class GoogleSheetsService {
     return {
       asset_tag: data.asset_tag || data.asset_tag || '',
       make: data.make || '',
+      ram: data.ram || '',
       assigned_to: data.assigned_to || data.assigned_to || '',
       assigned_date: data.assigned_date || data.assigned_date || '',
       returned: data.returned === 'Yes' || data.returned === 'true' || data.returned === true,
       damaged: data.damaged === 'Yes' || data.damaged === 'true' || data.damaged === true,
       issues: data.issues || '',
       notes: data.notes || '',
+      additional_equipment: data.additional_equipment || '',
       assignment_history: [],
       jumpcloud_installed: data.jumpcloud_installed === 'Yes' || data.jumpcloud_installed === 'true' || data.jumpcloud_installed === true,
       webroot_installed: data.webroot_installed === 'Yes' || data.webroot_installed === 'true' || data.webroot_installed === true
