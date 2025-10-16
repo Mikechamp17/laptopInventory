@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, WritableSignal, signal, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -104,7 +104,11 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       ofType(InvetoryActions.deleteLaptopSuccess),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.snackBar.open('Laptop deleted successfully', 'Close', { duration: 3000 });
+      this.snackBar.open('Laptop deleted successfully', 'Close', { 
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center'
+      });
     });
 
     // Listen for delete laptop failure action
@@ -112,12 +116,20 @@ export class InventoryListComponent implements OnInit, OnDestroy {
       ofType(InvetoryActions.deleteLaptopFailure),
       takeUntil(this.destroy$)
     ).subscribe((action) => {
-      this.snackBar.open('Error deleting laptop: ' + action.error, 'Close', { duration: 3000 });
+      this.snackBar.open('Error deleting laptop: ' + action.error, 'Close', { 
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center'
+      });
     });
 
     this.store.select(selectInventoryError).subscribe(error => {
       if (error) {
-        this.snackBar.open(`Error: ${error}`, 'Close', { duration: 5000 });
+        this.snackBar.open(`Error: ${error}`, 'Close', { 
+          duration: 5000,
+          verticalPosition: 'bottom',
+          horizontalPosition: 'center'
+        });
       }
     });
   }
@@ -135,7 +147,11 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     this.store.dispatch(InvetoryActions.addLaptop({ laptop }));
     
     // Show loading message
-    this.snackBar.open('Adding laptop...', 'Close', { duration: 2000 });
+    this.snackBar.open('Adding laptop...', 'Close', { 
+      duration: 2000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center'
+    });
   }
 
   // Test method to add a sample laptop
@@ -395,7 +411,11 @@ export class InventoryListComponent implements OnInit, OnDestroy {
 
   exportToCSV(): void {
     if (this.filteredLaptops.length === 0) {
-      this.snackBar.open('No data to export', 'Close', { duration: 3000 });
+      this.snackBar.open('No data to export', 'Close', { 
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center'
+      });
       return;
     }
 
@@ -426,7 +446,11 @@ export class InventoryListComponent implements OnInit, OnDestroy {
     link.click();
     document.body.removeChild(link);
 
-    this.snackBar.open('CSV exported successfully', 'Close', { duration: 3000 });
+    this.snackBar.open('CSV exported successfully', 'Close', { 
+      duration: 3000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center'
+    });
   }
 
 

@@ -82,7 +82,11 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
     // Subscribe to NgRx error state
     this.store.select(selectInventoryError).pipe(takeUntil(this.destroy$)).subscribe(error => {
       if (error) {
-        this.snackBar.open('Error: ' + error.message, 'Close', { duration: 3000 });
+        this.snackBar.open('Error: ' + error.message, 'Close', { 
+          duration: 3000,
+          verticalPosition: 'bottom',
+          horizontalPosition: 'center'
+        });
         this.loading = false;
       }
     });
@@ -92,7 +96,11 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
       ofType(InvetoryActions.addLaptopSuccess),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.snackBar.open('Laptop added successfully', 'Close', { duration: 3000 });
+      this.snackBar.open('Laptop added successfully', 'Close', { 
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center'
+      });
       this.router.navigate(['/inventory']);
     });
 
@@ -106,7 +114,11 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
       ofType(InvetoryActions.updateLaptopSuccess),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.snackBar.open('Laptop updated successfully', 'Close', { duration: 3000 });
+      this.snackBar.open('Laptop updated successfully', 'Close', { 
+        duration: 3000,
+        verticalPosition: 'bottom',
+        horizontalPosition: 'center'
+      });
       this.router.navigate(['/inventory']);
     });
   }
@@ -157,14 +169,22 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
               webroot_installed: laptop.webroot_installed || false
             });
           } else {
-            this.snackBar.open('Laptop not found', 'Close', { duration: 3000 });
+            this.snackBar.open('Laptop not found', 'Close', { 
+              duration: 3000,
+              verticalPosition: 'bottom',
+              horizontalPosition: 'center'
+            });
             this.router.navigate(['/inventory']);
           }
           this.loading = false;
         },
         error: (error) => {
           console.error('Error loading laptop:', error);
-          this.snackBar.open('Error loading laptop', 'Close', { duration: 3000 });
+          this.snackBar.open('Error loading laptop', 'Close', { 
+            duration: 3000,
+            verticalPosition: 'bottom',
+            horizontalPosition: 'center'
+          });
           this.loading = false;
           this.router.navigate(['/inventory']);
         }
@@ -217,7 +237,11 @@ export class LaptopFormComponent implements OnInit, OnDestroy {
           },
           error: (error) => {
             console.error('Error loading laptop:', error);
-            this.snackBar.open('Error loading laptop', 'Close', { duration: 3000 });
+            this.snackBar.open('Error loading laptop', 'Close', { 
+              duration: 3000,
+              verticalPosition: 'bottom',
+              horizontalPosition: 'center'
+            });
             this.loading = false;
           }
         });
